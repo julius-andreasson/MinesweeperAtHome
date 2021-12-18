@@ -16,6 +16,7 @@ Minesweeper at home: *this mess*
 
 Roadmap:
 * Make it impossible to lose on the first click. 
+* Movement using arrow keys. 
 * Rethink class structure.
 * Clean up the code. 
 * Make the UI nice. 
