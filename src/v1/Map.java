@@ -5,6 +5,9 @@ package v1;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class Map{
 
@@ -89,21 +92,37 @@ public class Map{
 	}
 
 	private static Point[] getAdjecentZeroes(int x, int y) {
-		//Generate an ArrayList with points representing each point in the TileMap.
-		ArrayList<Point> surroundingTilesList = new ArrayList<Point>();
-		/*
-		 * For each tile in a 9-tile square centered on the tile in question;
-		 * If it exists, and is not the 'tile in question';
-		 * Add it to the list of 'surroundingTilesList'
-		 */
-		for (int dx = -1; dx < 2; dx++) {
-			for (int dy = -1; dy < 2; dy++) {
-				if (isTileWithinBounds(x + dx, y + dy) && !(dx == 0 && dy == 0)) {
-					surroundingTilesList.add(new Point(x + dx, y + dy));
+    Queue<Point> frontier = new LinkedList<Point>();
+		frontier.add(new Point(x, y));
+
+		// Create an array and fill it with false. 
+		Boolean[][] reached = new Boolean[TileMap.length][TileMap[0].length];
+		for (int i = 0; i < TileMap.length; i++){
+			Arrays.fill(reached[i], false);
+		}
+		reached[x][y] = true;
+    
+    while (!frontier.isEmpty()) {
+			Point current = frontier.remove();
+
+			for (Point next : getSurroundingTiles(current.x, current.y)) {
+				if (!reached[next.x][next.y]) {
+					reached[next.x][next.y] = true;
+					if (TileMap[next.x][next.y].surroundingMines == 0) {
+						frontier.add(next);
+					}
 				}
 			}
 		}
-		
+		//Generate an ArrayList with points representing each point in the TileMap.
+		ArrayList<Point> surroundingTilesList = new ArrayList<Point>();
+		for (int i = 0; i < reached.length; i++){
+			for (int j = 0; j < reached[0].length; j++) {
+				if (reached[i][j]) {
+					surroundingTilesList.add(new Point(i, j));
+				}
+			}
+		}
 		//Convert the ArrayList to an array and return the finished product.
 		return surroundingTilesList.toArray(new Point[0]);
 	}
