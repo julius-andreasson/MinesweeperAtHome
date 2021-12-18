@@ -1,6 +1,7 @@
 # MinesweeperAtHome
 
 A Minesweeper clone written in Java. 
+
 Use 'D' to dig, 'F' to flag, and 'R' to reset the round.
 
 |
