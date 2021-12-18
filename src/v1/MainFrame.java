@@ -15,16 +15,16 @@ import javax.swing.WindowConstants;
 public class MainFrame{
 	/**
 	 * Settings. All 'final' variables.
-	 * @param tileSizeX This variable sets the size of tiles in the x-dimension.
-	 * @param tileSizeY This variable sets the size of tiles in the y-dimension.
-	 * @param tileCountX This variable sets the number of tiles in the x-dimension.
-	 * @param tileCountY This variable sets the number of tiles in the y-dimension.
-	 * @param mineCount This variable sets the number of mines that are to be randomly spread over the map.
-	 * @param tileSpacingX This variable sets the size of the spacing between tiles in the x-dimension.
-	 * @param tileSpacingY This variable sets the size of the spacing between tiles in the y-dimension.
-	 * @param borderSizeX This variable sets the size of the spacing between the different areas of the playing area in the x-dimension.
-	 * @param borderSizeY This variable sets the size of the spacing between the different areas of the playing area in the y-dimension.
-	 * @param topUISizeY This variable sets the size of the UI at the top of the window.
+	 * tileSizeX This variable sets the size of tiles in the x-dimension.
+	 * tileSizeY This variable sets the size of tiles in the y-dimension.
+	 * tileCountX This variable sets the number of tiles in the x-dimension.
+	 * tileCountY This variable sets the number of tiles in the y-dimension.
+	 * mineCount This variable sets the number of mines that are to be randomly spread over the map.
+	 * tileSpacingX This variable sets the size of the spacing between tiles in the x-dimension.
+	 * tileSpacingY This variable sets the size of the spacing between tiles in the y-dimension.
+	 * borderSizeX This variable sets the size of the spacing between the different areas of the playing area in the x-dimension.
+	 * borderSizeY This variable sets the size of the spacing between the different areas of the playing area in the y-dimension.
+	 * topUISizeY This variable sets the size of the UI at the top of the window.
 	 */
 	static final int
 			tileSizeX = 30, 
@@ -41,21 +41,24 @@ public class MainFrame{
 	/**
 	 * There are two different end variables since they keep track of two things;
 	 * if the round is still going or is over; and which of the two possible outcomes was reached.
-	 * @param end_Loss This boolean value signifies whether or not the player has lost the current round.
-	 * @param end_Win This boolean value signifies whether or not the player has won the current round. 
+	 * end_Loss This boolean value signifies whether or not the player has lost the current round.
+	 * end_Win This boolean value signifies whether or not the player has won the current round. 
 	 */
-	static boolean end_Loss = false,
-			end_Win = false, DEBUG = true;
+	static boolean 
+			end_Loss 	= false,
+			end_Win 	= false, 
+			DEBUG 		= false;
+	
 	/**
-	 * @param map is a custom object variable of the Map class.
+	 * map is a custom object variable of the Map class.
 	 */
 	public static Map map;
 	/**
-	 * @param viewer is a custom object variable of the Viewer class.
+	 * viewer is a custom object variable of the Viewer class.
 	 */
 	public static Viewer viewer;
 	/**
-	 * @param frame is a standard object variable of the JFrame type.
+	 * frame is a standard object variable of the JFrame type.
 	 */
 	public static JFrame frame;
 	
