@@ -45,7 +45,7 @@ public class MainFrame{
 	 * @param end_Win This boolean value signifies whether or not the player has won the current round. 
 	 */
 	static boolean end_Loss = false,
-			end_Win = false, DEBUG = false;
+			end_Win = false, DEBUG = true;
 	/**
 	 * @param map is a custom object variable of the Map class.
 	 */

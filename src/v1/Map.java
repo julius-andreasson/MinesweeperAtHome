@@ -68,24 +68,44 @@ public class Map{
 		return sum;
 	}
 	
-	private static Point[] getSurroundingTiles(int posX, int posY) {
-		//Generate an ArrayList with points representing each point in the TileMap.
-				ArrayList<Point> surroundingTilesList = new ArrayList<Point>();
-				/*
-				 * For each tile in a 9-tile square centered on the tile in question;
-				 * If it exists, and is not the 'tile in question';
-				 * Add it to the list of 'surroundingTilesList'
-				 */
-				for (int x = 0; x < 3; x++) {
-					for (int y = 0; y < 3; y++) {
-						if (isTileWithinBounds(posX - 1 + x, posY - 1 + y) && !(x==1 && y == 1)) {
-							surroundingTilesList.add(new Point(posX - 1 + x, posY - 1 + y));
-						}
-					}
+	private static Point[] getSurroundingTiles(int x, int y) {
+				//Generate an ArrayList with points representing each point in the TileMap.
+		ArrayList<Point> surroundingTilesList = new ArrayList<Point>();
+		/*
+		 * For each tile in a 9-tile square centered on the tile in question;
+		 * If it exists, and is not the 'tile in question';
+		 * Add it to the list of 'surroundingTilesList'
+		 */
+		for (int dx = -1; dx < 2; dx++) {
+			for (int dy = -1; dy < 2; dy++) {
+				if (isTileWithinBounds(x + dx, y + dy) && !(dx == 0 && dy == 0)) {
+					surroundingTilesList.add(new Point(x + dx, y + dy));
 				}
-				
-				//Convert the ArrayList to an array and return the finished product.
-				return surroundingTilesList.toArray(new Point[0]);
+			}
+		}
+		
+		//Convert the ArrayList to an array and return the finished product.
+		return surroundingTilesList.toArray(new Point[0]);
+	}
+
+	private static Point[] getAdjecentZeroes(int x, int y) {
+		//Generate an ArrayList with points representing each point in the TileMap.
+		ArrayList<Point> surroundingTilesList = new ArrayList<Point>();
+		/*
+		 * For each tile in a 9-tile square centered on the tile in question;
+		 * If it exists, and is not the 'tile in question';
+		 * Add it to the list of 'surroundingTilesList'
+		 */
+		for (int dx = -1; dx < 2; dx++) {
+			for (int dy = -1; dy < 2; dy++) {
+				if (isTileWithinBounds(x + dx, y + dy) && !(dx == 0 && dy == 0)) {
+					surroundingTilesList.add(new Point(x + dx, y + dy));
+				}
+			}
+		}
+		
+		//Convert the ArrayList to an array and return the finished product.
+		return surroundingTilesList.toArray(new Point[0]);
 	}
 	
 	/**
@@ -102,22 +122,23 @@ public class Map{
 
 	/**
 	 * When a tile is turned _Checked_, it's either a mine (in which case you lose) or not (in which case a chain reaction might be appropriate).
-	 * @param tileX
-	 * @param tileY
+	 * @param x
+	 * @param y
 	 */
-	public static void checkTile(int tileX, int tileY) {
-		if(!TileMap[tileX][tileY].isFlagged) {
-			if(TileMap[tileX][tileY].hasMine) {
+	public static void checkTile(int x, int y) {
+		if(!TileMap[x][y].isFlagged) {
+			if(TileMap[x][y].hasMine) {
 				MainFrame.end_Loss = true;
 			}
 			else
 			{
-				TileMap[tileX][tileY].Check();
+				TileMap[x][y].Check();
 				
-				//If the tile has no nearby mines; as a quality of life feature, automatically check the 8 tiles directly adjacent to it.
-				if(TileMap[tileX][tileY].surroundingMines == 0) {
+				//If the tile has no nearby mines; clear all adjecent tiles with no surrounding mines.
+				if(TileMap[x][y].surroundingMines == 0) {
+
 					//Get surrounding tiles and check each of them. 
-					for (Point p : getSurroundingTiles(tileX, tileY)) {
+					for (Point p : getAdjecentZeroes(x, y)) {
 						TileMap[p.x][p.y].Check();
 						
 						if (TileMap[p.x][p.y].isFlagged) {
@@ -134,11 +155,11 @@ public class Map{
 	 * A method that generates a random point, and then checks that isn't already in rndMap.
 	 * @param mineCount
 	 */
-	public Point[] generateMineMap(int xSize, int ySize, int mineCount) {
+	public Point[] generateMineMap(int width, int height, int mineCount) {
 		//Generate an ArrayList with points representing each point in the TileMap.
 		ArrayList<Point> pointSelectionList = new ArrayList<Point>();
-		for (int x = 0; x < xSize; x++) {
-			for (int y = 0; y < ySize; y++) {
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
 				pointSelectionList.add(new Point(x, y));
 			}
 		}
