@@ -8,9 +8,11 @@ import java.util.Queue;
 
 public class Map{
 
-	public Tile[][] tileMap;
+	Tile[][] tileMap;
 	
-	public int remainingFlags, tilesDugUp;
+	int 
+		remainingFlags, 
+		tilesDugUp;
 	
 	/**
 	 * @param xSize
@@ -34,14 +36,13 @@ public class Map{
 		
 		for (int n = 0; n < mineMap.length; n++) {
 			tileMap[mineMap[n].x][mineMap[n].y].hasMine = true;
+			remainingFlags = mineCount;
+			tilesDugUp = 0;
 			//DEBUG options
 			if (MainFrame.DEBUG) { 
 				tileMap[mineMap[n].x][mineMap[n].y].isFlagged = true;
 				remainingFlags = 0;
-			} else {
-				remainingFlags = mineCount;
 			}
-			tilesDugUp = 0;
 		}
 		
 		for (int x = 0; x < xSize; x++) {
@@ -88,6 +89,7 @@ public class Map{
 		return surroundingTilesList.toArray(new Point[0]);
 	}
 
+	// A flood-fill function that find an interconnected area
 	private Point[] getAdjecentZeroes(int x, int y) {
     // Initialize a queue. Add the starting point to it.
 		Queue<Point> frontier = new LinkedList<Point>();
@@ -108,6 +110,10 @@ public class Map{
 					reached[next.x][next.y] = true;
 					if (tileMap[next.x][next.y].surroundingMines == 0) {
 						frontier.add(next);
+						if (tileMap[next.x][next.y].isFlagged) {
+							tileMap[next.x][next.y].isFlagged = false;
+							remainingFlags++;
+					}
 					}
 				}
 			}
@@ -121,10 +127,6 @@ public class Map{
 				if (reached[i][j]) {
 					res.add(new Point(i, j));
 				}
-				if (tileMap[i][j].isFlagged) {
-					tileMap[i][j].isFlagged = false;
-					remainingFlags++;
-				}
 			}
 		}
 		//Convert the ArrayList to an array and return it.
@@ -137,14 +139,14 @@ public class Map{
 	 * @param y
 	 * @return
 	 */
-	public Boolean isTileWithinBounds(int x, int y) {
+	Boolean isTileWithinBounds(int x, int y) {
 		//If the point is within the bounds, then return 'true':
 		return (x >= 0 && x < tileMap.length &&
 				y >= 0 && y < tileMap[0].length);
 	}
 
 	// Checks a tile. 
-	public void check(int x, int y) {
+	private void check(int x, int y) {
 		//Check if it's already checked - if it is, don't bother redoing it - this to avoid counting the point twice.
 		if (!tileMap[x][y].isChecked) {
 			tilesDugUp++;
@@ -158,7 +160,7 @@ public class Map{
 	 * @param x
 	 * @param y
 	 */
-	public void checkTile(int x, int y) {
+	void checkTile(int x, int y) {
 		if(!tileMap[x][y].isFlagged) {
 			if(tileMap[x][y].hasMine) {
 				MainFrame.end_Loss = true;
@@ -188,7 +190,7 @@ public class Map{
 	 * A method that generates a random point, and then checks that isn't already in rndMap.
 	 * @param mineCount
 	 */
-	public Point[] generateMineMap(Point startPoint, int width, int height, int mineCount) {
+	Point[] generateMineMap(Point startPoint, int width, int height, int mineCount) {
 		//Generate an ArrayList with points representing each point in the TileMap.
 		ArrayList<Point> pointSelectionList = new ArrayList<Point>();
 		for (int x = 0; x < width; x++) {
@@ -223,7 +225,7 @@ public class Map{
 	/**
 	 * This is a separate method since it has to be checked both when a tile is cleared and when a flag is placed.
 	 */
-	public void checkWin() {
+	void checkWin() {
 		//If all the flags are placed and all the empty tiles are dug up, the player wins.
 		if (tilesDugUp == MainFrame.tilesToWin && remainingFlags == 0) {
 			//The player beat the game!

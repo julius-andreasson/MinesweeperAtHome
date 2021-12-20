@@ -50,7 +50,7 @@ public class MainFrame{
 			end_Loss 	= false,
 			end_Win 	= false, 
 			firstDig 	= true,
-			DEBUG 		= false;
+			DEBUG 		= true;
 	
 	/**
 	 * map is an instance of the Map class.
