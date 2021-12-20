@@ -12,7 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
-public class MainFrame{
+public class Minesweep{
 	/**
 	 * Settings. All are 'final'.
 	 * tileSizeX sets the size of tiles in the x-dimension.
@@ -32,48 +32,17 @@ public class MainFrame{
 			tileCountX = 16,
 			tileCountY = 16,
 			mineCount = 40,
-			tilesToWin = tileCountX * tileCountY - mineCount,
 			tileSpacingX = 3, 
 			tileSpacingY = 3,
 			borderSizeX = 20,
 			borderSizeY = 20,
 			topUISizeY = 50;
-	/**
-	 * There are two different end variables since they keep track of two things;
-	 * if the round is still going or is over; and which of the two possible outcomes was reached.
-	 * end_Loss describes if the current round is lost.
-	 * end_Win describes if the current round is won. 
-	 * firstDig describes if the next dig will be the first. If so, generate the map after the dig. 
-	 * DEBUG describes if the game is in debug mode. 
-	 */
-	static boolean 
-			end_Loss 	= false,
-			end_Win 	= false, 
-			firstDig 	= true,
-			DEBUG 		= true;
 	
-	/**
-	 * map is an instance of the Map class.
-	 */
-	private static Map map;
-
-	/**
-	 * viewer is an instance of the Viewer class.
-	 */
-	private static Viewer viewer;
-
-	/**
-	 * frame is an instance of JFrame.
-	 */
+	private static Game game;
 	private static JFrame frame;
-	
-	public static void main(String[] args) {
-		//Initializing the 'map', 'viewer' and 'frame' variables.
-		map = new Map(new Point(0, 0), tileCountX, tileCountY, mineCount);
 
-		viewer = new Viewer(map);
-		//Enable DoubleBuffering to reduce flickering.
-		viewer.setDoubleBuffered(true);
+	public static void main(String[] args) {
+		game = new Game(tileSizeX, tileSizeY, tileCountX, tileCountY, mineCount, tileSpacingX, tileSpacingY, borderSizeX, borderSizeY, topUISizeY);
 
 		frame = new JFrame("MinesweeperAtHome");
 		//Set the frame to terminate the program when closed.
@@ -86,7 +55,7 @@ public class MainFrame{
 				borderSizeY * 3 + topUISizeY + tileCountY * tileSizeY + (tileCountY - 1) * tileSpacingY
 				));
 		frame.pack();
-		frame.add(viewer);
+		frame.add(game.viewer);
 		
 		//Add keyListeners
 		frame.addKeyListener(new KeyAdapter() {
@@ -135,10 +104,10 @@ public class MainFrame{
 	
 	private static void action(int eventKey) {
 		//This prevents any action but reset to go through if the game has been lost. 
-		if ((end_Loss || end_Win) && eventKey != 3) {
+		
+		if ((game.end_Loss || game.end_Win) && eventKey != 3) {
 			eventKey = 0; 
 		}
-		
 		//Event == 0: nothing 
 		//Event == 1: dig
 		//Event == 2: flag
@@ -162,40 +131,8 @@ public class MainFrame{
 				/ 
 				(float)(tileSizeY + tileSpacingY));
 		
-		if(map.isTileWithinBounds(tileX, tileY)) {
-			//Dig
-			if(eventKey == 1) {
-				if (firstDig) {
-					map = new Map(new Point(tileX, tileY), tileCountX, tileCountY, mineCount);
-					viewer.map = map;
-					firstDig = false;
-				}
-				map.checkTile(tileX, tileY);
-			}
-			//Flag
-			if(eventKey == 2 && !map.tileMap[tileX][tileY].isChecked) {
-				if(map.tileMap[tileX][tileY].isFlagged) {
-					map.tileMap[tileX][tileY].isFlagged = false; 
-					map.remainingFlags++; 
-				}
-				else
-				{
-					map.tileMap[tileX][tileY].isFlagged = true; 
-					map.remainingFlags--; 
-					map.checkWin();	
-				}
-			}
-			//Restart
-			if(eventKey == 3) {
-				//On the next line, the Map constructor resets 'minesRemaning'.  
-				map = new Map(new Point(0, 0), tileCountX, tileCountY, mineCount);
-				viewer.map = map;
-				end_Loss = false;
-				end_Win = false;
-				firstDig = true;
-				// The value 'minesRemaning' is not reset at this point in this method, since it's already reset in the Map constructor that is called.
-			}
-			viewer.repaint();
+		if(game.map.isTileWithinBounds(tileX, tileY)) {
+			game.action(eventKey, new Point(tileX, tileY));
 		}
 	}
 }

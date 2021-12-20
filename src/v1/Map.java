@@ -8,6 +8,8 @@ import java.util.Queue;
 
 public class Map{
 
+	Game game;
+
 	Tile[][] tileMap;
 	
 	int 
@@ -19,7 +21,9 @@ public class Map{
 	 * @param ySize
 	 * @param mineCount
 	 */
-	public Map(Point startingPoint, int xSize, int ySize, int mineCount) {
+	public Map(Game _game, Point startingPoint, int xSize, int ySize, int mineCount) {
+		game = _game;
+
 		//Initialize TileMap
 		tileMap = new Tile[xSize][ySize];
 		
@@ -39,7 +43,7 @@ public class Map{
 			remainingFlags = mineCount;
 			tilesDugUp = 0;
 			//DEBUG options
-			if (MainFrame.DEBUG) { 
+			if (game.DEBUG) { 
 				tileMap[mineMap[n].x][mineMap[n].y].isFlagged = true;
 				remainingFlags = 0;
 			}
@@ -163,7 +167,7 @@ public class Map{
 	void checkTile(int x, int y) {
 		if(!tileMap[x][y].isFlagged) {
 			if(tileMap[x][y].hasMine) {
-				MainFrame.end_Loss = true;
+				game.end_Loss = true;
 			}
 			else
 			{
@@ -227,9 +231,9 @@ public class Map{
 	 */
 	void checkWin() {
 		//If all the flags are placed and all the empty tiles are dug up, the player wins.
-		if (tilesDugUp == MainFrame.tilesToWin && remainingFlags == 0) {
+		if (tilesDugUp == game.tilesToWin && remainingFlags == 0) {
 			//The player beat the game!
-			MainFrame.end_Win = true;
+			game.end_Win = true;
 		}
 	}
 	

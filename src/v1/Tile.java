@@ -1,6 +1,6 @@
 package v1;
 
-public class Tile {
+class Tile {
 	
 	/**
 	 * Indicates whether or not the tile has been checked for mines.
@@ -25,6 +25,6 @@ public class Tile {
 	/**
 	 * Constructor method
 	 */
-	public Tile() {
+	Tile() {
 	}
 }

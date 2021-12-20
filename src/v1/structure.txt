@@ -1,0 +1,15 @@
+Perspective
+    Game
+        KeyEvents   ( gives dig/flag/reset/playerMovement )        
+        action ( takes tile pos )
+        Player ( gives tile pos )
+        Map
+        Viewer
+
+Minesweep
+    KeyEvents   ( gives dig/flag/reset )
+    MouseEvents ( gives dig/flag/position )
+    Game
+        action ( takes tile pos )
+        Map
+        Viewer
