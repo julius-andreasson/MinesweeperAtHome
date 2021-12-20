@@ -7,11 +7,6 @@ import java.awt.Graphics;
 import javax.swing.JPanel;
 
 public class Viewer extends JPanel {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 4468946197788215667L;
 	
 	Map map;
 

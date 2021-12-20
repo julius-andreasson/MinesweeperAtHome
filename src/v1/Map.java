@@ -17,13 +17,13 @@ public class Map{
 	 * @param ySize
 	 * @param mineCount
 	 */
-	public Map(int xSize, int ySize, int mineCount) {
+	public Map(Point startingPoint, int xSize, int ySize, int mineCount) {
 		//Initialize TileMap
 		tileMap = new Tile[xSize][ySize];
 		
 		//Generate a set of random point on the map.
 		Point[] mineMap = new Point[mineCount];
-		mineMap = generateMineMap(xSize, ySize, mineCount);
+		mineMap = generateMineMap(startingPoint, xSize, ySize, mineCount);
 		
 		//Populate TileMap with Tiles
 		for (int x = 0; x < xSize; x++) {
@@ -144,7 +144,7 @@ public class Map{
 	}
 
 	// Checks a tile. 
-	public void Check(int x, int y) {
+	public void check(int x, int y) {
 		//Check if it's already checked - if it is, don't bother redoing it - this to avoid counting the point twice.
 		if (!tileMap[x][y].isChecked) {
 			tilesDugUp++;
@@ -165,14 +165,14 @@ public class Map{
 			}
 			else
 			{
-				Check(x, y);
+				check(x, y);
 				
 				//If the tile has no nearby mines; clear all adjecent tiles with no surrounding mines.
 				if(tileMap[x][y].surroundingMines == 0) {
 
 					//Get surrounding tiles and check each of them. 
 					for (Point p : getAdjecentZeroes(x, y)) {
-						Check(p.x, p.y);
+						check(p.x, p.y);
 						
 						if (tileMap[p.x][p.y].isFlagged) {
 							tileMap[p.x][p.y].isFlagged = false;
@@ -188,7 +188,7 @@ public class Map{
 	 * A method that generates a random point, and then checks that isn't already in rndMap.
 	 * @param mineCount
 	 */
-	public Point[] generateMineMap(int width, int height, int mineCount) {
+	public Point[] generateMineMap(Point startPoint, int width, int height, int mineCount) {
 		//Generate an ArrayList with points representing each point in the TileMap.
 		ArrayList<Point> pointSelectionList = new ArrayList<Point>();
 		for (int x = 0; x < width; x++) {
@@ -196,6 +196,9 @@ public class Map{
 				pointSelectionList.add(new Point(x, y));
 			}
 		}
+
+		// Remove the first point clicked by the player - so that no mine can be generated there.
+		pointSelectionList.remove(startPoint);
 		
 		//Generate array of Points to return
 		Point[] returnArray = new Point[mineCount];

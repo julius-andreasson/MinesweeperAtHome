@@ -43,31 +43,33 @@ public class MainFrame{
 	 * if the round is still going or is over; and which of the two possible outcomes was reached.
 	 * end_Loss describes if the current round is lost.
 	 * end_Win describes if the current round is won. 
+	 * firstDig describes if the next dig will be the first. If so, generate the map after the dig. 
 	 * DEBUG describes if the game is in debug mode. 
 	 */
 	static boolean 
 			end_Loss 	= false,
 			end_Win 	= false, 
+			firstDig 	= true,
 			DEBUG 		= false;
 	
 	/**
 	 * map is an instance of the Map class.
 	 */
-	public static Map map;
+	private static Map map;
 
 	/**
 	 * viewer is an instance of the Viewer class.
 	 */
-	public static Viewer viewer;
+	private static Viewer viewer;
 
 	/**
 	 * frame is an instance of JFrame.
 	 */
-	public static JFrame frame;
+	private static JFrame frame;
 	
 	public static void main(String[] args) {
 		//Initializing the 'map', 'viewer' and 'frame' variables.
-		map = new Map(tileCountX, tileCountY, mineCount);
+		map = new Map(new Point(0, 0), tileCountX, tileCountY, mineCount);
 
 		viewer = new Viewer(map);
 		//Enable DoubleBuffering to reduce flickering.
@@ -163,6 +165,11 @@ public class MainFrame{
 		if(map.isTileWithinBounds(tileX, tileY)) {
 			//Dig
 			if(eventKey == 1) {
+				if (firstDig) {
+					map = new Map(new Point(tileX, tileY), tileCountX, tileCountY, mineCount);
+					viewer.map = map;
+					firstDig = false;
+				}
 				map.checkTile(tileX, tileY);
 			}
 			//Flag
@@ -181,10 +188,11 @@ public class MainFrame{
 			//Restart
 			if(eventKey == 3) {
 				//On the next line, the Map constructor resets 'minesRemaning'.  
-				map = new Map(tileCountX, tileCountY, mineCount);
+				map = new Map(new Point(0, 0), tileCountX, tileCountY, mineCount);
 				viewer.map = map;
 				end_Loss = false;
 				end_Win = false;
+				firstDig = true;
 				// The value 'minesRemaning' is not reset at this point in this method, since it's already reset in the Map constructor that is called.
 			}
 			viewer.repaint();

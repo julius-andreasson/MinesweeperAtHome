@@ -13,9 +13,11 @@ Mom: No, we have Minesweeper at home.
 Minesweeper at home: *this mess*
 
 |
+BUGS:
+* Incorrectly clears all flags around empty tiles upon 'flood-fill' mass clear.
 
 Roadmap:
-* Make it impossible to lose on the first click. 
+* [Done!] Make it impossible to lose on the first click. 
 * Movement using arrow keys. 
 * Rethink class structure.
 * Clean up the code. 
