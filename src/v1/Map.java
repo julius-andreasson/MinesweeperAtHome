@@ -1,6 +1,3 @@
-/**
- * 
- */
 package v1;
 
 import java.awt.Point;
@@ -11,9 +8,9 @@ import java.util.Queue;
 
 public class Map{
 
-	public static Tile[][] TileMap;
+	public Tile[][] tileMap;
 	
-	public static int remainingFlags, tilesDugUp;
+	public int remainingFlags, tilesDugUp;
 	
 	/**
 	 * @param xSize
@@ -22,7 +19,7 @@ public class Map{
 	 */
 	public Map(int xSize, int ySize, int mineCount) {
 		//Initialize TileMap
-		TileMap = new Tile[xSize][ySize];
+		tileMap = new Tile[xSize][ySize];
 		
 		//Generate a set of random point on the map.
 		Point[] mineMap = new Point[mineCount];
@@ -31,25 +28,25 @@ public class Map{
 		//Populate TileMap with Tiles
 		for (int x = 0; x < xSize; x++) {
 			for (int y = 0; y < ySize; y++) {
-				TileMap[x][y] = new Tile();
+				tileMap[x][y] = new Tile();
 			}
 		}
 		
 		for (int n = 0; n < mineMap.length; n++) {
-			TileMap[mineMap[n].x][mineMap[n].y].hasMine = true;
+			tileMap[mineMap[n].x][mineMap[n].y].hasMine = true;
 			//DEBUG options
 			if (MainFrame.DEBUG) { 
-				TileMap[mineMap[n].x][mineMap[n].y].isFlagged = true;
+				tileMap[mineMap[n].x][mineMap[n].y].isFlagged = true;
 				remainingFlags = 0;
 			} else {
 				remainingFlags = mineCount;
 			}
-			Map.tilesDugUp = 0;
+			tilesDugUp = 0;
 		}
 		
 		for (int x = 0; x < xSize; x++) {
 			for (int y = 0; y < ySize; y++) {
-				TileMap[x][y].surroundingMines = calcSurroundingMines(x, y);
+				tileMap[x][y].surroundingMines = calcSurroundingMines(x, y);
 			}
 		}
 	}
@@ -64,14 +61,14 @@ public class Map{
 		int sum = 0;
 		Point[] surroundingTiles = getSurroundingTiles(x, y);
 		for (Point p : surroundingTiles) {
-			if(TileMap[p.x][p.y].hasMine) {
+			if(tileMap[p.x][p.y].hasMine) {
 				sum++;
 			}
 		}	
 		return sum;
 	}
 	
-	private static Point[] getSurroundingTiles(int x, int y) {
+	private Point[] getSurroundingTiles(int x, int y) {
 				//Generate an ArrayList with points representing each point in the TileMap.
 		ArrayList<Point> surroundingTilesList = new ArrayList<Point>();
 		/*
@@ -91,13 +88,14 @@ public class Map{
 		return surroundingTilesList.toArray(new Point[0]);
 	}
 
-	private static Point[] getAdjecentZeroes(int x, int y) {
-    Queue<Point> frontier = new LinkedList<Point>();
+	private Point[] getAdjecentZeroes(int x, int y) {
+    // Initialize a queue. Add the starting point to it.
+		Queue<Point> frontier = new LinkedList<Point>();
 		frontier.add(new Point(x, y));
 
 		// Create an array and fill it with false. 
-		Boolean[][] reached = new Boolean[TileMap.length][TileMap[0].length];
-		for (int i = 0; i < TileMap.length; i++){
+		Boolean[][] reached = new Boolean[tileMap.length][tileMap[0].length];
+		for (int i = 0; i < tileMap.length; i++){
 			Arrays.fill(reached[i], false);
 		}
 		reached[x][y] = true;
@@ -108,23 +106,29 @@ public class Map{
 			for (Point next : getSurroundingTiles(current.x, current.y)) {
 				if (!reached[next.x][next.y]) {
 					reached[next.x][next.y] = true;
-					if (TileMap[next.x][next.y].surroundingMines == 0) {
+					if (tileMap[next.x][next.y].surroundingMines == 0) {
 						frontier.add(next);
 					}
 				}
 			}
 		}
-		//Generate an ArrayList with points representing each point in the TileMap.
-		ArrayList<Point> surroundingTilesList = new ArrayList<Point>();
+
+		// Generate an empty ArrayList.
+		ArrayList<Point> res = new ArrayList<Point>();
+		// Iterate through "reached" and add all the reached points to res.
 		for (int i = 0; i < reached.length; i++){
 			for (int j = 0; j < reached[0].length; j++) {
 				if (reached[i][j]) {
-					surroundingTilesList.add(new Point(i, j));
+					res.add(new Point(i, j));
+				}
+				if (tileMap[i][j].isFlagged) {
+					tileMap[i][j].isFlagged = false;
+					remainingFlags++;
 				}
 			}
 		}
-		//Convert the ArrayList to an array and return the finished product.
-		return surroundingTilesList.toArray(new Point[0]);
+		//Convert the ArrayList to an array and return it.
+		return res.toArray(new Point[0]);
 	}
 	
 	/**
@@ -133,10 +137,20 @@ public class Map{
 	 * @param y
 	 * @return
 	 */
-	public static boolean isTileWithinBounds(int x, int y) {
+	public Boolean isTileWithinBounds(int x, int y) {
 		//If the point is within the bounds, then return 'true':
-		return (x >= 0 && x < TileMap.length &&
-				y >= 0 && y < TileMap[0].length);
+		return (x >= 0 && x < tileMap.length &&
+				y >= 0 && y < tileMap[0].length);
+	}
+
+	// Checks a tile. 
+	public void Check(int x, int y) {
+		//Check if it's already checked - if it is, don't bother redoing it - this to avoid counting the point twice.
+		if (!tileMap[x][y].isChecked) {
+			tilesDugUp++;
+			tileMap[x][y].isChecked = true;
+			checkWin();
+		}
 	}
 
 	/**
@@ -144,25 +158,25 @@ public class Map{
 	 * @param x
 	 * @param y
 	 */
-	public static void checkTile(int x, int y) {
-		if(!TileMap[x][y].isFlagged) {
-			if(TileMap[x][y].hasMine) {
+	public void checkTile(int x, int y) {
+		if(!tileMap[x][y].isFlagged) {
+			if(tileMap[x][y].hasMine) {
 				MainFrame.end_Loss = true;
 			}
 			else
 			{
-				TileMap[x][y].Check();
+				Check(x, y);
 				
 				//If the tile has no nearby mines; clear all adjecent tiles with no surrounding mines.
-				if(TileMap[x][y].surroundingMines == 0) {
+				if(tileMap[x][y].surroundingMines == 0) {
 
 					//Get surrounding tiles and check each of them. 
 					for (Point p : getAdjecentZeroes(x, y)) {
-						TileMap[p.x][p.y].Check();
+						Check(p.x, p.y);
 						
-						if (TileMap[p.x][p.y].isFlagged) {
-							TileMap[p.x][p.y].isFlagged = false;
-							Map.remainingFlags++;
+						if (tileMap[p.x][p.y].isFlagged) {
+							tileMap[p.x][p.y].isFlagged = false;
+							remainingFlags++;
 						}
 					}
 				}
@@ -206,9 +220,9 @@ public class Map{
 	/**
 	 * This is a separate method since it has to be checked both when a tile is cleared and when a flag is placed.
 	 */
-	public static void checkWin() {
+	public void checkWin() {
 		//If all the flags are placed and all the empty tiles are dug up, the player wins.
-		if (Map.tilesDugUp == MainFrame.tilesToWin && Map.remainingFlags == 0) {
+		if (tilesDugUp == MainFrame.tilesToWin && remainingFlags == 0) {
 			//The player beat the game!
 			MainFrame.end_Win = true;
 		}

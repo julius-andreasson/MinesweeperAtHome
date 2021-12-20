@@ -14,17 +14,17 @@ import javax.swing.WindowConstants;
 
 public class MainFrame{
 	/**
-	 * Settings. All 'final' variables.
-	 * tileSizeX This variable sets the size of tiles in the x-dimension.
-	 * tileSizeY This variable sets the size of tiles in the y-dimension.
-	 * tileCountX This variable sets the number of tiles in the x-dimension.
-	 * tileCountY This variable sets the number of tiles in the y-dimension.
-	 * mineCount This variable sets the number of mines that are to be randomly spread over the map.
-	 * tileSpacingX This variable sets the size of the spacing between tiles in the x-dimension.
-	 * tileSpacingY This variable sets the size of the spacing between tiles in the y-dimension.
-	 * borderSizeX This variable sets the size of the spacing between the different areas of the playing area in the x-dimension.
-	 * borderSizeY This variable sets the size of the spacing between the different areas of the playing area in the y-dimension.
-	 * topUISizeY This variable sets the size of the UI at the top of the window.
+	 * Settings. All are 'final'.
+	 * tileSizeX sets the size of tiles in the x-dimension.
+	 * tileSizeY sets the size of tiles in the y-dimension.
+	 * tileCountX sets the number of tiles in the x-dimension.
+	 * tileCountY sets the number of tiles in the y-dimension.
+	 * mineCount sets the number of mines that are to be randomly spread over the map.
+	 * tileSpacingX sets the size of the spacing between tiles in the x-dimension.
+	 * tileSpacingY sets the size of the spacing between tiles in the y-dimension.
+	 * borderSizeX sets the size of the spacing between the different areas of the playing area in the x-dimension.
+	 * borderSizeY sets the size of the spacing between the different areas of the playing area in the y-dimension.
+	 * topUISizeY sets the size of the UI at the top of the window.
 	 */
 	static final int
 			tileSizeX = 30, 
@@ -41,8 +41,9 @@ public class MainFrame{
 	/**
 	 * There are two different end variables since they keep track of two things;
 	 * if the round is still going or is over; and which of the two possible outcomes was reached.
-	 * end_Loss This boolean value signifies whether or not the player has lost the current round.
-	 * end_Win This boolean value signifies whether or not the player has won the current round. 
+	 * end_Loss describes if the current round is lost.
+	 * end_Win describes if the current round is won. 
+	 * DEBUG describes if the game is in debug mode. 
 	 */
 	static boolean 
 			end_Loss 	= false,
@@ -50,33 +51,38 @@ public class MainFrame{
 			DEBUG 		= false;
 	
 	/**
-	 * map is a custom object variable of the Map class.
+	 * map is an instance of the Map class.
 	 */
 	public static Map map;
+
 	/**
-	 * viewer is a custom object variable of the Viewer class.
+	 * viewer is an instance of the Viewer class.
 	 */
 	public static Viewer viewer;
+
 	/**
-	 * frame is a standard object variable of the JFrame type.
+	 * frame is an instance of JFrame.
 	 */
 	public static JFrame frame;
 	
 	public static void main(String[] args) {
 		//Initializing the 'map', 'viewer' and 'frame' variables.
 		map = new Map(tileCountX, tileCountY, mineCount);
-		viewer = new Viewer();
+
+		viewer = new Viewer(map);
 		//Enable DoubleBuffering to reduce flickering.
 		viewer.setDoubleBuffered(true);
+
 		frame = new JFrame("MinesweeperAtHome");
 		//Set the frame to terminate the program when closed.
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		
+		//Applying settings and adding the custom Canvas-based 'viewer' to the JFrame 'frame'.
 		//Dynamic calculation of the size of 'frame'.
 		frame.getContentPane().setPreferredSize(new Dimension(
 				borderSizeX * 2 + tileCountX * tileSizeX + (tileCountX - 1) * tileSpacingX, 
 				borderSizeY * 3 + topUISizeY + tileCountY * tileSizeY + (tileCountY - 1) * tileSpacingY
 				));
-		//Applying settings and adding the custom Canvas-based 'viewer' to the JFrame 'frame'.
 		frame.pack();
 		frame.add(viewer);
 		
@@ -138,45 +144,50 @@ public class MainFrame{
 		
 		//MousePos
 		Point mousePos = new Point(
-				MouseInfo.getPointerInfo().getLocation().x - frame.getLocationOnScreen().getLocation().x, 
-				MouseInfo.getPointerInfo().getLocation().y - frame.getLocationOnScreen().getLocation().y);
+			MouseInfo.getPointerInfo().getLocation().x - frame.getLocationOnScreen().getLocation().x, 
+			MouseInfo.getPointerInfo().getLocation().y - frame.getLocationOnScreen().getLocation().y
+		);
+		
 		//x_pos
-				int tileX = (int)(
-						(float)(mousePos.x - (borderSizeX)) 
-						/ 
-						(float)(tileSizeX + tileSpacingX)); 
-				//y_pos
-				int tileY = (int)(
-						(float)(mousePos.y - (borderSizeY * 3 + topUISizeY)) 
-						/ 
-						(float)(tileSizeY + tileSpacingY)); 
-				if(Map.isTileWithinBounds(tileX, tileY)) {
-					//Dig
-					if(eventKey == 1) {
-						Map.checkTile(tileX, tileY);
-					}
-					//Flag
-					if(eventKey == 2 && !Map.TileMap[tileX][tileY].isChecked) {
-						if(Map.TileMap[tileX][tileY].isFlagged) {
-							Map.TileMap[tileX][tileY].isFlagged = false; 
-							Map.remainingFlags++; 
-						}
-						else
-						{
-							Map.TileMap[tileX][tileY].isFlagged = true; 
-							Map.remainingFlags--; 
-							Map.checkWin();	
-						}
-					}
-					//Restart
-					if(eventKey == 3) {
-						//On the next line, the Map constructor resets 'minesRemaning'.  
-						MainFrame.map = new Map(MainFrame.tileCountX, MainFrame.tileCountY, MainFrame.mineCount);
-						MainFrame.end_Loss = false;
-						MainFrame.end_Win = false;
-						//The value 'minesRemaning' is not reset at this point in this method, since it's already reset in the Map constructor that has already been called. 					}
-				}
-				viewer.repaint();
+		int tileX = (int)(
+				(float)(mousePos.x - (borderSizeX)) 
+				/ 
+				(float)(tileSizeX + tileSpacingX)); 
+		
+		//y_pos
+		int tileY = (int)(
+				(float)(mousePos.y - (borderSizeY * 3 + topUISizeY)) 
+				/ 
+				(float)(tileSizeY + tileSpacingY));
+		
+		if(map.isTileWithinBounds(tileX, tileY)) {
+			//Dig
+			if(eventKey == 1) {
+				map.checkTile(tileX, tileY);
 			}
+			//Flag
+			if(eventKey == 2 && !map.tileMap[tileX][tileY].isChecked) {
+				if(map.tileMap[tileX][tileY].isFlagged) {
+					map.tileMap[tileX][tileY].isFlagged = false; 
+					map.remainingFlags++; 
+				}
+				else
+				{
+					map.tileMap[tileX][tileY].isFlagged = true; 
+					map.remainingFlags--; 
+					map.checkWin();	
+				}
+			}
+			//Restart
+			if(eventKey == 3) {
+				//On the next line, the Map constructor resets 'minesRemaning'.  
+				map = new Map(tileCountX, tileCountY, mineCount);
+				viewer.map = map;
+				end_Loss = false;
+				end_Win = false;
+				// The value 'minesRemaning' is not reset at this point in this method, since it's already reset in the Map constructor that is called.
+			}
+			viewer.repaint();
 		}
+	}
 }

@@ -30,13 +30,4 @@ public class Tile {
 	 */
 	public Tile() {
 	}
-	
-	public void Check() {
-		//Check if it's already checked - if it is, don't bother redoing it - this to avoid counting the point twice.
-		if (!isChecked) {
-			Map.tilesDugUp++;
-			isChecked = true;
-			Map.checkWin();
-		}
-	}
 }
