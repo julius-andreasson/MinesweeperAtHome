@@ -42,7 +42,10 @@ public class Minesweep{
 	private static JFrame frame;
 
 	public static void main(String[] args) {
-		game = new Game(tileSizeX, tileSizeY, tileCountX, tileCountY, mineCount, tileSpacingX, tileSpacingY, borderSizeX, borderSizeY, topUISizeY);
+		
+		game = new Game(
+			new Settings(tileSizeX, tileSizeY, tileCountX, tileCountY, mineCount, tileSpacingX, tileSpacingY, borderSizeX, borderSizeY, topUISizeY)	
+		);
 
 		frame = new JFrame("MinesweeperAtHome");
 		//Set the frame to terminate the program when closed.

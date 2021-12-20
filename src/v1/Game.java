@@ -3,22 +3,12 @@ package v1;
 import java.awt.Point;
 
 public class Game {
-  int 
-    tilesToWin,
-    tileCountX,
-    tileCountY,
-    mineCount,
-    tileSizeX, 
-    tileSizeY,
-    tileSpacingX, 
-    tileSpacingY,
-    borderSizeX,
-    borderSizeY,
-    topUISizeY;
-
   Map map;
   StandardViewer viewer;
   Player player;
+  Settings settings;
+
+  int tilesToWin;
 
   /**
 	 * There are two different end variables since they keep track of two things;
@@ -34,32 +24,12 @@ public class Game {
     firstDig 	= true,
     DEBUG 		= true;
   
-  public Game( 
-    int _tileSizeX, 
-    int _tileSizeY,
-    int _tileCountX, 
-    int _tileCountY, 
-    int _mineCount,
-    int _tileSpacingX, 
-    int _tileSpacingY,
-    int _borderSizeX,
-    int _borderSizeY,
-    int _topUISizeY
-    ){
-    tileSizeX = _tileSizeX;
-    tileSizeY = _tileSizeY;
-    tileCountX = _tileCountX;
-    tileCountY = _tileCountY;
-    mineCount = _mineCount;
-    tilesToWin = _tileCountX * _tileCountY - _mineCount;
-    tileSpacingX = _tileSpacingX;
-    tileSpacingY = _tileSpacingY;
-    borderSizeX = _borderSizeX;
-    borderSizeY = _borderSizeY;
-    topUISizeY = _topUISizeY;
+  public Game(Settings _settings){
+    settings = _settings;
+    tilesToWin = settings.tileCountX * settings.tileCountY - settings.mineCount;
 
     //Initializing the 'map', 'viewer' and 'frame' variables.
-		map = new Map(this, new Point(0, 0), tileCountX, tileCountY, mineCount);
+		map = new Map(this, new Point(0, 0), settings.tileCountX, settings.tileCountY, settings.mineCount);
 
 		viewer = new StandardViewer(this);
 		//Enable DoubleBuffering to reduce flickering.
@@ -89,7 +59,7 @@ public class Game {
 			//Dig
 			if(eventKey == 1) {
 				if (firstDig) {
-					map = new Map(this, new Point(tilePos.x, tilePos.y), tileCountX, tileCountY, mineCount);
+					map = new Map(this, new Point(tilePos.x, tilePos.y), settings.tileCountX, settings.tileCountY, settings.mineCount);
 					firstDig = false;
 				}
 				map.checkTile(tilePos.x, tilePos.y);
@@ -110,7 +80,7 @@ public class Game {
 			//Restart
 			if(eventKey == 3) {
 				//On the next line, the Map constructor resets 'minesRemaning'.  
-				map = new Map(this, new Point(0, 0), tileCountX, tileCountY, mineCount);
+				map = new Map(this, new Point(0, 0), settings.tileCountX, settings.tileCountY, settings.mineCount);
 				end_Loss = false;
 				end_Win = false;
 				firstDig = true;
