@@ -2,11 +2,13 @@ package v1;
 
 import java.awt.Point;
 
+import javax.swing.JPanel;
+
 public class Game {
   Map map;
-  StandardViewer viewer;
+  JPanel viewer;
   Player player;
-  Settings settings;
+	InputHandler inputHandler;
 
   int tilesToWin;
 
@@ -22,23 +24,75 @@ public class Game {
     end_Loss 	= false,
     end_Win 	= false, 
     firstDig 	= true,
-    DEBUG 		= true;
+    DEBUG 		= false;
   
-  public Game(Settings _settings){
-    settings = _settings;
-    tilesToWin = settings.tileCountX * settings.tileCountY - settings.mineCount;
+  public Game(InputHandler _inputHandler, boolean perspective){
+		inputHandler = _inputHandler;
+    tilesToWin = Settings.tileCountX * Settings.tileCountY - Settings.mineCount;
 
     //Initializing the 'map', 'viewer' and 'frame' variables.
-		map = new Map(this, new Point(0, 0), settings.tileCountX, settings.tileCountY, settings.mineCount);
+		map = new Map(this, Settings.startingPoint, Settings.tileCountX, Settings.tileCountY, Settings.mineCount);
 
-		viewer = new StandardViewer(this);
+		viewer = perspective ? new PerspectiveViewer(this) : new StandardViewer(this);
 		//Enable DoubleBuffering to reduce flickering.
 		viewer.setDoubleBuffered(true);
 
-    // §
-    player = new Player(0, 0);
+		System.out.println(Settings.startingPoint.x);
+    player = new Player(Settings.startingPoint.x, Settings.startingPoint.y);
   }
 
+	void run() {
+		long lastTime = 0L;
+		int elapsedTime;
+		boolean flag_enabled = true;
+		boolean reset_enabled = true;
+		while (true) {
+			elapsedTime = (int)(System.currentTimeMillis() - lastTime);
+			lastTime = System.currentTimeMillis();
+			int leftright = 0;
+			int updown = 0;
+			if (inputHandler.up) {
+				updown -= 1;
+			}
+			if (inputHandler.left) {
+				leftright -= 1;
+			}
+			if (inputHandler.down) {
+				updown += 1;
+			}
+			if (inputHandler.right) {
+				leftright += 1;
+			}
+			player.update(elapsedTime, leftright, updown);
+			if (inputHandler.dig) {
+				action(1);
+			}
+			if (inputHandler.flag) {
+				if (flag_enabled) {
+					action(2);
+					flag_enabled = false;
+				}
+			} else {
+				flag_enabled = true;
+			}
+			if (inputHandler.reset) {
+				if (reset_enabled) {
+					action(3);
+					reset_enabled = false;
+				}
+			} else {
+				reset_enabled = true;
+			}
+			try {
+				Thread.sleep(16L);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
+			// Loop final step
+			viewer.repaint();
+		}
+	}
   // Overloading to simplify calls when using the "player" system. 
   void action(int eventKey) {
     action(eventKey, new Point(player.tileX, player.tileY));
@@ -47,7 +101,7 @@ public class Game {
   void action(int eventKey, Point tilePos) {
 		//This prevents any action but reset to go through if the game has been lost. 
 		if ((end_Loss || end_Win) && eventKey != 3) {
-			eventKey = 0; 
+			eventKey = 0;
 		}
 		
 		//Event == 0: nothing 
@@ -59,7 +113,7 @@ public class Game {
 			//Dig
 			if(eventKey == 1) {
 				if (firstDig) {
-					map = new Map(this, new Point(tilePos.x, tilePos.y), settings.tileCountX, settings.tileCountY, settings.mineCount);
+					map = new Map(this, new Point(tilePos.x, tilePos.y), Settings.tileCountX, Settings.tileCountY, Settings.mineCount);
 					firstDig = false;
 				}
 				map.checkTile(tilePos.x, tilePos.y);
@@ -80,7 +134,7 @@ public class Game {
 			//Restart
 			if(eventKey == 3) {
 				//On the next line, the Map constructor resets 'minesRemaning'.  
-				map = new Map(this, new Point(0, 0), settings.tileCountX, settings.tileCountY, settings.mineCount);
+				map = new Map(this, new Point(0, 0), Settings.tileCountX, Settings.tileCountY, Settings.mineCount);
 				end_Loss = false;
 				end_Win = false;
 				firstDig = true;

@@ -1,39 +1,48 @@
 package v1;
 
-public class Settings {
-  int
-    tileCountX,
-    tileCountY,
-    mineCount,
-    tileSizeX, 
-    tileSizeY,
-    tileSpacingX, 
-    tileSpacingY,
-    borderSizeX,
-    borderSizeY,
-    topUISizeY;
+import java.awt.Point;
 
-  public Settings(
-    int _tileSizeX, 
-    int _tileSizeY,
-    int _tileCountX, 
-    int _tileCountY, 
-    int _mineCount,
-    int _tileSpacingX, 
-    int _tileSpacingY,
-    int _borderSizeX,
-    int _borderSizeY,
-    int _topUISizeY
-  ){
-    tileSizeX = _tileSizeX;
-    tileSizeY = _tileSizeY;
-    tileCountX = _tileCountX;
-    tileCountY = _tileCountY;
-    mineCount = _mineCount;
-    tileSpacingX = _tileSpacingX;
-    tileSpacingY = _tileSpacingY;
-    borderSizeX = _borderSizeX;
-    borderSizeY = _borderSizeY;
-    topUISizeY = _topUISizeY;
+public class Settings {
+  static int
+    tileSizeX = 30, 
+    tileSizeY = 30,
+    tileCountX = 16,
+    tileCountY = 16,
+    mineCount = 40,
+    tileSpacingX = 3, 
+    tileSpacingY = 3,
+    borderSizeX = 20,
+    borderSizeY = 20,
+    topUISizeY = 50;
+  
+  static float renderingAngle = 0.5f;
+  
+  static Point startingPoint = pixelsFromTile(tileCountX / 2, tileCountY / 2);
+  
+  static Point pixelsFromTile(int x, int y) {
+    return new Point(
+      // x_pos      
+      borderSizeX + x * (tileSizeX + tileSpacingX)
+      ,
+      //y_pos
+      borderSizeY * 2 + topUISizeY + y * (tileSizeY + tileSpacingY)
+    );
+  }
+
+  static Point tileFromPixels(int x, int y) {
+    return new Point(
+      // x_pos
+      (int)(
+        (float)(x - (borderSizeX)) 
+        / 
+        (float)(tileSizeX + tileSpacingX)
+      ),
+      //y_pos
+      (int)(
+        (float)(y - (borderSizeY * 3 + topUISizeY)) 
+        / 
+        (float)(tileSizeY + tileSpacingY)
+      )
+    );
   }
 }

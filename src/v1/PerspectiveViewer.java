@@ -4,17 +4,23 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Polygon;
 
 import javax.swing.JPanel;
 
-public class StandardViewer extends JPanel {
+public class PerspectiveViewer extends JPanel {
 	Game game;
+	Point mid;
 
 	/**
 	 * Constructor
 	 */
-	public StandardViewer (Game _game) {
+	public PerspectiveViewer (Game _game) {
 		game = _game;
+		mid = new Point(
+			Settings.tileCountX * (Settings.tileSizeX + Settings.tileSpacingX) / 2 + Settings.borderSizeX, 
+			Settings.tileCountY * (Settings.tileSizeY + Settings.tileSpacingY) / 2 + Settings.borderSizeY + Settings.topUISizeY
+		);
 	}
 	
 	/**
@@ -33,6 +39,9 @@ public class StandardViewer extends JPanel {
 				paintTile(g, x, y);
 			}
 		}
+
+		// Draw player
+		g.fillOval(mid.x - 5, mid.y - 5, 10, 10);
 		
 		//Draw text; game-over if (end_Loss)
 		g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, Settings.tileSizeY - 3));
@@ -52,7 +61,17 @@ public class StandardViewer extends JPanel {
 	
 	public void paintTile(Graphics g, int tileX, int tileY) {
 		Color tileColor, stringColor; 
+		// float angle = Settings.renderingAngle;
+
+		Point p = new Point((int)game.player.x, (int)game.player.y);
 		Point pos = Settings.pixelsFromTile(tileX, tileY);
+		pos.translate(mid.x - p.x, mid.y - p.y);
+		Point[] points = new Point[4];
+		points[0] = pos;
+		points[1] = new Point(pos.x + Settings.tileSizeX, pos.y);
+		points[2] = new Point(pos.x + Settings.tileSizeX, pos.y + Settings.tileSizeY);
+		points[3] = new Point(pos.x, pos.y + Settings.tileSizeY);
+		// float xmod = (float)tileY / game.player.y;
 		
 		if (game.map.tileMap[tileX][tileY].isChecked) {
 			tileColor = Color.lightGray; 
@@ -67,7 +86,12 @@ public class StandardViewer extends JPanel {
 			}
 		}
 		g.setColor(tileColor);
-		g.fillRect(pos.x, pos.y, Settings.tileSizeX, Settings.tileSizeY);
+		Polygon pol = new Polygon();
+		pol.addPoint(points[0].x, points[0].y);
+		pol.addPoint(points[1].x, points[1].y);
+		pol.addPoint(points[2].x, points[2].y);
+		pol.addPoint(points[3].x, points[3].y);
+		g.fillPolygon(pol);
 		//If the player has lost the game, draw a mine on the current tile if it 'hasMine'. 
 		if ((game.end_Loss || game.end_Win) && game.map.tileMap[tileX][tileY].hasMine) {
 			//Set the color of the mines. 

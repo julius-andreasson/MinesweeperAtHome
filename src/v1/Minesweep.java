@@ -42,10 +42,8 @@ public class Minesweep{
 	private static JFrame frame;
 
 	public static void main(String[] args) {
-		
-		game = new Game(
-			new Settings(tileSizeX, tileSizeY, tileCountX, tileCountY, mineCount, tileSpacingX, tileSpacingY, borderSizeX, borderSizeY, topUISizeY)	
-		);
+		InputHandler inputHandler = new InputHandler();
+		game = new Game(inputHandler, false);
 
 		frame = new JFrame("MinesweeperAtHome");
 		//Set the frame to terminate the program when closed.
@@ -121,21 +119,11 @@ public class Minesweep{
 			MouseInfo.getPointerInfo().getLocation().x - frame.getLocationOnScreen().getLocation().x, 
 			MouseInfo.getPointerInfo().getLocation().y - frame.getLocationOnScreen().getLocation().y
 		);
+
+		Point newPos = Settings.tileFromPixels(mousePos.x, mousePos.y);
 		
-		//x_pos
-		int tileX = (int)(
-				(float)(mousePos.x - (borderSizeX)) 
-				/ 
-				(float)(tileSizeX + tileSpacingX)); 
-		
-		//y_pos
-		int tileY = (int)(
-				(float)(mousePos.y - (borderSizeY * 3 + topUISizeY)) 
-				/ 
-				(float)(tileSizeY + tileSpacingY));
-		
-		if(game.map.isTileWithinBounds(tileX, tileY)) {
-			game.action(eventKey, new Point(tileX, tileY));
+		if(game.map.isTileWithinBounds(newPos.x, newPos.y)) {
+			game.action(eventKey, newPos);
 		}
 	}
 }

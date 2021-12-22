@@ -74,7 +74,7 @@ public class Map{
 	}
 	
 	private Point[] getSurroundingTiles(int x, int y) {
-				//Generate an ArrayList with points representing each point in the TileMap.
+		//Generate an ArrayList with points representing points in the TileMap.
 		ArrayList<Point> surroundingTilesList = new ArrayList<Point>();
 		/*
 		 * For each tile in a 9-tile square centered on the tile in question;
@@ -89,6 +89,29 @@ public class Map{
 			}
 		}
 		
+		//Convert the ArrayList to an array and return the finished product.
+		return surroundingTilesList.toArray(new Point[0]);
+	}
+
+	private Point[] getNext(int x, int y) {
+		//Generate an ArrayList with points representing each point in the TileMap.
+		ArrayList<Point> surroundingTilesList = new ArrayList<Point>();
+		/*
+		* For each tile next to the tile in question;
+		* If it exists, add it to the list of 'surroundingTilesList'
+		*/
+		Point[] points = {
+			new Point(x - 1, y),
+			new Point(x + 1, y),
+			new Point(x, y - 1),
+			new Point(x, y + 1)
+		};
+		for (Point p : points) {
+			if (isTileWithinBounds(p.x, p.y)) {
+				surroundingTilesList.add(p);
+			}
+		}
+
 		//Convert the ArrayList to an array and return the finished product.
 		return surroundingTilesList.toArray(new Point[0]);
 	}
@@ -109,7 +132,7 @@ public class Map{
     while (!frontier.isEmpty()) {
 			Point current = frontier.remove();
 
-			for (Point next : getSurroundingTiles(current.x, current.y)) {
+			for (Point next : getNext(current.x, current.y)) {
 				if (!reached[next.x][next.y]) {
 					reached[next.x][next.y] = true;
 					if (tileMap[next.x][next.y].surroundingMines == 0) {
@@ -117,7 +140,7 @@ public class Map{
 						if (tileMap[next.x][next.y].isFlagged) {
 							tileMap[next.x][next.y].isFlagged = false;
 							remainingFlags++;
-					}
+						}
 					}
 				}
 			}
