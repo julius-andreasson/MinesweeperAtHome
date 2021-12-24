@@ -41,7 +41,8 @@ public class PerspectiveViewer extends JPanel {
 		}
 
 		// Draw player
-		g.fillOval(mid.x - 5, mid.y - 5, 10, 10);
+		g.setColor(Color.GREEN);
+		g.fillOval(mid.x - 10, mid.y - 10 - Settings.borderSizeY, 20, 20);
 		
 		//Draw text; game-over if (end_Loss)
 		g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, Settings.tileSizeY - 3));

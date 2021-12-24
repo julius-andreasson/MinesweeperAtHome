@@ -23,8 +23,7 @@ public class Game {
 	boolean 
     end_Loss 	= false,
     end_Win 	= false, 
-    firstDig 	= true,
-    DEBUG 		= false;
+    firstDig 	= true;
   
   public Game(InputHandler _inputHandler, boolean perspective){
 		inputHandler = _inputHandler;
@@ -38,7 +37,7 @@ public class Game {
 		viewer.setDoubleBuffered(true);
 
 		System.out.println(Settings.startingPoint.x);
-    player = new Player(Settings.startingPoint.x, Settings.startingPoint.y);
+    player = new Player();
   }
 
 	void run() {
@@ -62,6 +61,11 @@ public class Game {
 			}
 			if (inputHandler.right) {
 				leftright += 1;
+			}
+			if (inputHandler.sprint) {
+				leftright *= 2;
+				updown *= 2;
+				System.out.println("wow");
 			}
 			player.update(elapsedTime, leftright, updown);
 			if (inputHandler.dig) {
@@ -138,6 +142,7 @@ public class Game {
 				end_Loss = false;
 				end_Win = false;
 				firstDig = true;
+				player.reset();
 				// The value 'minesRemaning' is not reset at this point in this method, since it's already reset in the Map constructor that is called.
 			}
 			viewer.repaint();

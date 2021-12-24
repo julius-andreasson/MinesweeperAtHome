@@ -2,19 +2,21 @@ package v1;
 
 import java.awt.Point;
 
-public class Player {
-  float x;
-  float y;
-  int tileX;
-  int tileY;
+class Player {
+  float x, y;
+  int tileX, tileY;
   float movespeed = 0.1f;
 
-  public Player(int _x, int _y){
-    x = _x;
-    y = _y;
+  public Player(){
+    reset();
   }
 
-  public void update(long elapsedTime, int leftRight, int upDown) {
+  void reset(){
+    x = Settings.startingPoint.x;
+    y = Settings.startingPoint.y;
+  }
+
+  void update(long elapsedTime, int leftRight, int upDown) {
     y += upDown * movespeed * elapsedTime;
     x += leftRight * movespeed * elapsedTime;
     //x_pos

@@ -15,6 +15,8 @@ public class Settings {
     borderSizeY = 20,
     topUISizeY = 50;
   
+  static boolean debug = false;
+
   static float renderingAngle = 0.5f;
   
   static Point startingPoint = pixelsFromTile(tileCountX / 2, tileCountY / 2);

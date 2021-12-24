@@ -6,6 +6,7 @@ public class InputHandler {
     left,
     down,
     right,
+    sprint,
     dig,
     flag,
     reset;
@@ -26,6 +27,9 @@ public class InputHandler {
       break;
       case 39:
       right = true;
+      break;
+      case 16:
+      sprint = true;
       break;
       // Other input
       case 68:
@@ -57,6 +61,9 @@ public class InputHandler {
       case 39:
       right = false;
       break;
+      case 16:
+      sprint = false;
+      break;
       // Other input
       case 68:
       dig = false;
@@ -68,6 +75,7 @@ public class InputHandler {
       reset = false;
       break;
       default:
+      if (Settings.debug) {System.out.println(keyCode);}
       break;
     }
   }

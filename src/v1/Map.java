@@ -43,7 +43,7 @@ public class Map{
 			remainingFlags = mineCount;
 			tilesDugUp = 0;
 			//DEBUG options
-			if (game.DEBUG) { 
+			if (Settings.debug) { 
 				tileMap[mineMap[n].x][mineMap[n].y].isFlagged = true;
 				remainingFlags = 0;
 			}
