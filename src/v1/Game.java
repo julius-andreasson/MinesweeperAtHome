@@ -36,7 +36,6 @@ public class Game {
 		//Enable DoubleBuffering to reduce flickering.
 		viewer.setDoubleBuffered(true);
 
-		System.out.println(Settings.startingPoint.x);
     player = new Player();
   }
 
@@ -48,8 +47,8 @@ public class Game {
 		while (true) {
 			elapsedTime = (int)(System.currentTimeMillis() - lastTime);
 			lastTime = System.currentTimeMillis();
-			int leftright = 0;
-			int updown = 0;
+			float leftright = 0;
+			float updown = 0;
 			if (inputHandler.up) {
 				updown -= 1;
 			}
@@ -63,9 +62,8 @@ public class Game {
 				leftright += 1;
 			}
 			if (inputHandler.sprint) {
-				leftright *= 2;
-				updown *= 2;
-				System.out.println("wow");
+				leftright *= Settings.sprintSpeedModifier;
+				updown *= Settings.sprintSpeedModifier;
 			}
 			player.update(elapsedTime, leftright, updown);
 			if (inputHandler.dig) {

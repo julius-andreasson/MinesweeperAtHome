@@ -16,7 +16,7 @@ class Player {
     y = Settings.startingPoint.y;
   }
 
-  void update(long elapsedTime, int leftRight, int upDown) {
+  void update(long elapsedTime, float leftRight, float upDown) {
     y += upDown * movespeed * elapsedTime;
     x += leftRight * movespeed * elapsedTime;
     //x_pos

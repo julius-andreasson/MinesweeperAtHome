@@ -17,7 +17,9 @@ public class Settings {
   
   static boolean debug = false;
 
-  static float renderingAngle = 0.5f;
+  static float 
+    renderingAngle = 0.5f,
+    sprintSpeedModifier = 2f;
   
   static Point startingPoint = pixelsFromTile(tileCountX / 2, tileCountY / 2);
   
