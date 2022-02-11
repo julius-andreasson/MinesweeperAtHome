@@ -1,20 +1,26 @@
-package v1;
+package Main;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Point;
+import Utils.Point;
+import java.awt.Polygon;
 
 import javax.swing.JPanel;
 
-public class StandardViewer extends JPanel {
+public class PerspectiveViewer extends JPanel {
 	Game game;
+	Point mid;
 
 	/**
 	 * Constructor
 	 */
-	public StandardViewer (Game _game) {
-		game = _game;
+	public PerspectiveViewer (Game game) {
+		this.game = game;
+		this.mid = new Point(
+			Settings.tileCountX * (Settings.tileSizeX + Settings.tileSpacingX) / 2 + Settings.borderSizeX, 
+			Settings.tileCountY * (Settings.tileSizeY + Settings.tileSpacingY) / 2 + Settings.borderSizeY + Settings.topUISizeY
+		);
 	}
 	
 	/**
@@ -33,6 +39,10 @@ public class StandardViewer extends JPanel {
 				paintTile(g, x, y);
 			}
 		}
+
+		// Draw player
+		g.setColor(Color.GREEN);
+		g.fillOval(mid.x - 10, mid.y - 10 - Settings.borderSizeY, 20, 20);
 		
 		//Draw text; game-over if (end_Loss)
 		g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, Settings.tileSizeY - 3));
@@ -50,10 +60,35 @@ public class StandardViewer extends JPanel {
 		}
 	}
 	
+	Polygon tilePoints(int tileX, int tileY) {
+		Polygon result = new Polygon();
+		
+		Point playerPoint = new Point((int)game.player.x, (int)game.player.y);
+		Point[] points = Settings.getCornerPoints(tileX, tileY);
+		
+		// Stretching
+		for (int i = 0; i < points.length; i++) {
+			float xmod = (float)points[i].y / playerPoint.y;
+			points[i] = new Point(
+				(int)(mid.x + (float)(points[i].x - playerPoint.x) * xmod),
+				(int)(mid.y + points[i].y)
+			);
+		}
+		Point offset = new Point(0, -330); //§ temp for testing
+		for (int i = 0; i < points.length; i++) {
+			// Centering
+			points[i].translate(offset.x + mid.x - playerPoint.x, offset.y + mid.y - playerPoint.y);
+			// Add to polygon
+			result.addPoint(points[i].x, points[i].y);
+		}
+		return result;
+	}
+
 	public void paintTile(Graphics g, int tileX, int tileY) {
 		Color tileColor, stringColor; 
-		Point pos = Settings.pixelsFromTile(tileX, tileY);
-		
+		// float angle = Settings.renderingAngle;
+		Polygon pol = tilePoints(tileX, tileY);
+
 		if (game.map.tileMap[tileX][tileY].isChecked) {
 			tileColor = Color.lightGray; 
 		}
@@ -67,20 +102,20 @@ public class StandardViewer extends JPanel {
 			}
 		}
 		g.setColor(tileColor);
-		g.fillRect(pos.x, pos.y, Settings.tileSizeX, Settings.tileSizeY);
+		g.fillPolygon(pol);
 		//If the player has lost the game, draw a mine on the current tile if it 'hasMine'. 
 		if ((game.end_Loss || game.end_Win) && game.map.tileMap[tileX][tileY].hasMine) {
 			//Set the color of the mines. 
 			g.setColor(Color.black);
 			//Draw an oval that represents a mine. 
-			g.fillOval(pos.x, pos.y, Settings.tileSizeX, Settings.tileSizeY);
+			g.fillOval(pol.xpoints[0], pol.ypoints[0], Settings.tileSizeX, Settings.tileSizeY);
 		}
 		// Draw the number of mines on each checked tile. 
 		if (!game.map.tileMap[tileX][tileY].hasMine) {
 			if(game.map.tileMap[tileX][tileY].isChecked && game.map.tileMap[tileX][tileY].surroundingMines > 0) {
 				stringColor = Color.black; 
 				g.setColor(stringColor); 
-				g.drawString("" + game.map.tileMap[tileX][tileY].surroundingMines, pos.x + Settings.tileSpacingX, pos.y + Settings.tileSizeY - Settings.tileSpacingY);
+				g.drawString("" + game.map.tileMap[tileX][tileY].surroundingMines, pol.xpoints[0] + Settings.tileSpacingX, pol.ypoints[0] + Settings.tileSizeY - Settings.tileSpacingY);
 			}
 		}
 	}

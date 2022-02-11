@@ -1,4 +1,4 @@
-package v1;
+package Main;
 
 import java.awt.Dimension;
 import java.awt.event.KeyAdapter;

@@ -1,6 +1,6 @@
-package v1;
+package Main;
 
-import java.awt.Point;
+import Utils.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -240,7 +240,7 @@ public class Map{
 			//Generate a random number within the bounds of the 'pointSelectionList'. -1 to keep within bounds.
 			curr = randomNumber(0, pointSelectionList.size() - 1);
 			//Pick the point at this number.
-			returnArray[n] = new Point(pointSelectionList.get(curr));
+			returnArray[n] = pointSelectionList.get(curr).copy();
 			//Each time a point is selected, remove it from the 'pointSelectionList' to avoid doubles.
 			pointSelectionList.remove(curr);
 		}

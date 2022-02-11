@@ -1,6 +1,6 @@
-package v1;
+package Main;
 
-import java.awt.Point;
+import Utils.Point;
 
 public class Settings {
   static int
@@ -31,6 +31,22 @@ public class Settings {
       //y_pos
       borderSizeY * 2 + topUISizeY + y * (tileSizeY + tileSpacingY)
     );
+  }
+
+  static public Point[] getCornerPoints(int x, int y) {
+    Point[] ret = new Point[4];
+    Point mid = new Point(
+      // x_pos      
+      borderSizeX + (int)(((float)x + 0.5f) * (float)(tileSizeX + tileSpacingX))
+      ,
+      //y_pos
+      borderSizeY * 2 + topUISizeY + (int)((float)(y + 0.5f) * (tileSizeY + tileSpacingY))
+    );
+    ret[0] = mid.translated(- tileSizeX / 2, - tileSizeY / 2);
+    ret[1] = mid.translated(  tileSizeX / 2, - tileSizeY / 2);
+    ret[2] = mid.translated(  tileSizeX / 2,   tileSizeY / 2);
+    ret[3] = mid.translated(- tileSizeX / 2,   tileSizeY / 2);
+    return ret;
   }
 
   static Point tileFromPixels(int x, int y) {

@@ -1,6 +1,6 @@
-package v1;
+package Main;
 
-import java.awt.Point;
+import Utils.Point;
 
 class Player {
   float x, y;

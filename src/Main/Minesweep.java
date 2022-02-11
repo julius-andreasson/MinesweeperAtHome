@@ -1,8 +1,8 @@
-package v1;
+package Main;
 
 import java.awt.Dimension;
 import java.awt.MouseInfo;
-import java.awt.Point;
+import Utils.Point;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
