@@ -42,8 +42,7 @@ public class Minesweep{
 	private static JFrame frame;
 
 	public static void main(String[] args) {
-		InputHandler inputHandler = new InputHandler();
-		game = new Game(inputHandler, false);
+		game = new Game();
 
 		frame = new JFrame("MinesweeperAtHome");
 		//Set the frame to terminate the program when closed.

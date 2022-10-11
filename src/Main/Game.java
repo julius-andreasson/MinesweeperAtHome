@@ -4,14 +4,13 @@ import Utils.Point;
 import javax.swing.JPanel;
 
 public class Game {
-  Map map;
-  JPanel viewer;
-  Player player;
-	InputHandler inputHandler;
+	Map map;
+	JPanel viewer;
+	Player player;
+	InputHandler inputHandler = new InputHandler();
+	int tilesToWin;
 
-  int tilesToWin;
-
-  /**
+	/**
 	 * There are two different end variables since they keep track of two things;
 	 * if the round is still going or is over; and which of the two possible outcomes was reached.
 	 * end_Loss describes if the current round is lost.
@@ -20,23 +19,22 @@ public class Game {
 	 * DEBUG describes if the game is in debug mode. 
 	 */
 	boolean 
-    end_Loss 	= false,
-    end_Win 	= false, 
-    firstDig 	= true;
+		end_Loss 	= false,
+		end_Win 	= false, 
+		firstDig 	= true;
   
-  public Game(InputHandler _inputHandler, boolean perspective){
-		inputHandler = _inputHandler;
-    tilesToWin = Settings.tileCountX * Settings.tileCountY - Settings.mineCount;
+	public Game(){
+    	tilesToWin = Settings.tileCountX * Settings.tileCountY - Settings.mineCount;
 
-    //Initializing the 'map', 'viewer' and 'frame' variables.
+    	//Initializing the 'map', 'viewer' and 'frame' variables.
 		map = new Map(this, Settings.startingPoint, Settings.tileCountX, Settings.tileCountY, Settings.mineCount);
 
-		viewer = perspective ? new PerspectiveViewer(this) : new StandardViewer(this);
+		viewer = new StandardViewer(this);
 		//Enable DoubleBuffering to reduce flickering.
 		viewer.setDoubleBuffered(true);
 
-    player = new Player();
-  }
+    	player = new Player();
+  	}
 
 	void run() {
 		long lastTime = 0L;
@@ -48,27 +46,27 @@ public class Game {
 			lastTime = System.currentTimeMillis();
 			float leftright = 0;
 			float updown = 0;
-			if (inputHandler.up) {
-				updown -= 1;
+			if (inputHandler.isDown(InputHandler.UP)) {
+				updown--;
 			}
-			if (inputHandler.left) {
-				leftright -= 1;
+			if (inputHandler.isDown(InputHandler.LEFT)) {
+				leftright--;
 			}
-			if (inputHandler.down) {
-				updown += 1;
+			if (inputHandler.isDown(InputHandler.DOWN)) {
+				updown++;
 			}
-			if (inputHandler.right) {
-				leftright += 1;
+			if (inputHandler.isDown(InputHandler.RIGHT)) {
+				leftright++;
 			}
-			if (inputHandler.sprint) {
+			if (inputHandler.isDown(InputHandler.SPRINT)) {
 				leftright *= Settings.sprintSpeedModifier;
 				updown *= Settings.sprintSpeedModifier;
 			}
 			player.update(elapsedTime, leftright, updown);
-			if (inputHandler.dig) {
+			if (inputHandler.isDown(InputHandler.DIG)) {
 				action(1);
 			}
-			if (inputHandler.flag) {
+			if (inputHandler.isDown(InputHandler.FLAG)) {
 				if (flag_enabled) {
 					action(2);
 					flag_enabled = false;
@@ -76,7 +74,7 @@ public class Game {
 			} else {
 				flag_enabled = true;
 			}
-			if (inputHandler.reset) {
+			if (inputHandler.isDown(InputHandler.RESET)) {
 				if (reset_enabled) {
 					action(3);
 					reset_enabled = false;
@@ -94,12 +92,12 @@ public class Game {
 			viewer.repaint();
 		}
 	}
-  // Overloading to simplify calls when using the "player" system. 
-  void action(int eventKey) {
-    action(eventKey, new Point(player.tileX, player.tileY));
-  }
+	// Overloading to simplify calls when using the "player" system. 
+	void action(int eventKey) {
+		action(eventKey, new Point(player.tileX, player.tileY));
+	}
 
-  void action(int eventKey, Point tilePos) {
+  	void action(int eventKey, Point tilePos) {
 		//This prevents any action but reset to go through if the game has been lost. 
 		if ((end_Loss || end_Win) && eventKey != 3) {
 			eventKey = 0;
