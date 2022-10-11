@@ -12,32 +12,8 @@ import javax.swing.WindowConstants;
 
 import Utils.Point;
 
-public class Minesweep{
-	/**
-	 * Settings. All are 'final'.
-	 * tileSizeX sets the size of tiles in the x-dimension.
-	 * tileSizeY sets the size of tiles in the y-dimension.
-	 * tileCountX sets the number of tiles in the x-dimension.
-	 * tileCountY sets the number of tiles in the y-dimension.
-	 * mineCount sets the number of mines that are to be randomly spread over the map.
-	 * tileSpacingX sets the size of the spacing between tiles in the x-dimension.
-	 * tileSpacingY sets the size of the spacing between tiles in the y-dimension.
-	 * borderSizeX sets the size of the spacing between the different areas of the playing area in the x-dimension.
-	 * borderSizeY sets the size of the spacing between the different areas of the playing area in the y-dimension.
-	 * topUISizeY sets the size of the UI at the top of the window.
-	 */
-	private static final int
-		tileSizeX = 30, 
-		tileSizeY = 30,
-		tileCountX = 16,
-		tileCountY = 16,
-		mineCount = 40,
-		tileSpacingX = 3, 
-		tileSpacingY = 3,
-		borderSizeX = 20,
-		borderSizeY = 20,
-		topUISizeY = 50;
-	
+public class Minesweep {
+
 	private Game game = new Game();
 	private JFrame frame = new JFrame("MinesweeperAtHome");
 
@@ -48,8 +24,8 @@ public class Minesweep{
 		//Applying settings and adding the custom Canvas-based 'viewer' to the JFrame 'frame'.
 		//Dynamic calculation of the size of 'frame'.
 		frame.getContentPane().setPreferredSize(new Dimension(
-				borderSizeX * 2 + tileCountX * tileSizeX + (tileCountX - 1) * tileSpacingX, 
-				borderSizeY * 3 + topUISizeY + tileCountY * tileSizeY + (tileCountY - 1) * tileSpacingY
+				Settings.borderSizeX * 2 + Settings.tileCountX * Settings.tileSizeX + (Settings.tileCountX - 1) * Settings.tileSpacingX, 
+				Settings.borderSizeY * 3 + Settings.topUISizeY + Settings.tileCountY * Settings.tileSizeY + (Settings.tileCountY - 1) * Settings.tileSpacingY
 				));
 		frame.pack();
 		frame.add(game.viewer);
