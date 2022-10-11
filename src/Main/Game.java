@@ -3,10 +3,16 @@ package Main;
 import Utils.Point;
 import javax.swing.JPanel;
 
+enum Action {
+	NONE,
+	DIG,
+	FLAG,
+	RESET;
+}
+
 public class Game {
 	Map map;
 	JPanel viewer;
-	Player player;
 	InputHandler inputHandler = new InputHandler();
 	int tilesToWin;
 
@@ -30,58 +36,10 @@ public class Game {
 		map = new Map(this, Settings.startingPoint, Settings.tileCountX, Settings.tileCountY, Settings.mineCount);
 
 		viewer = new StandardViewer(this);
-		//Enable DoubleBuffering to reduce flickering.
-		viewer.setDoubleBuffered(true);
-
-    	player = new Player();
   	}
 
 	void run() {
-		long lastTime = 0L;
-		int elapsedTime;
-		boolean flag_enabled = true;
-		boolean reset_enabled = true;
 		while (true) {
-			elapsedTime = (int)(System.currentTimeMillis() - lastTime);
-			lastTime = System.currentTimeMillis();
-			float leftright = 0;
-			float updown = 0;
-			if (inputHandler.isDown(InputHandler.UP)) {
-				updown--;
-			}
-			if (inputHandler.isDown(InputHandler.LEFT)) {
-				leftright--;
-			}
-			if (inputHandler.isDown(InputHandler.DOWN)) {
-				updown++;
-			}
-			if (inputHandler.isDown(InputHandler.RIGHT)) {
-				leftright++;
-			}
-			if (inputHandler.isDown(InputHandler.SPRINT)) {
-				leftright *= Settings.sprintSpeedModifier;
-				updown *= Settings.sprintSpeedModifier;
-			}
-			player.update(elapsedTime, leftright, updown);
-			if (inputHandler.isDown(InputHandler.DIG)) {
-				action(1);
-			}
-			if (inputHandler.isDown(InputHandler.FLAG)) {
-				if (flag_enabled) {
-					action(2);
-					flag_enabled = false;
-				}
-			} else {
-				flag_enabled = true;
-			}
-			if (inputHandler.isDown(InputHandler.RESET)) {
-				if (reset_enabled) {
-					action(3);
-					reset_enabled = false;
-				}
-			} else {
-				reset_enabled = true;
-			}
 			try {
 				Thread.sleep(16L);
 			} catch (InterruptedException e) {
@@ -92,55 +50,46 @@ public class Game {
 			viewer.repaint();
 		}
 	}
-	// Overloading to simplify calls when using the "player" system. 
-	void action(int eventKey) {
-		action(eventKey, new Point(player.tileX, player.tileY));
-	}
 
-  	void action(int eventKey, Point tilePos) {
+  	void action(Action action, Point tilePos) {
 		//This prevents any action but reset to go through if the game has been lost. 
-		if ((end_Loss || end_Win) && eventKey != 3) {
-			eventKey = 0;
+		if ((end_Loss || end_Win) && action != Action.RESET) {
+			action = Action.NONE;
 		}
-		
-		//Event == 0: nothing 
-		//Event == 1: dig
-		//Event == 2: flag
-		//Event == 3: reset
-		
-		if(map.isTileWithinBounds(player.tileX, player.tileY)) {
-			//Dig
-			if(eventKey == 1) {
+
+		switch (action) {
+			case DIG:
 				if (firstDig) {
 					map = new Map(this, new Point(tilePos.x, tilePos.y), Settings.tileCountX, Settings.tileCountY, Settings.mineCount);
 					firstDig = false;
 				}
 				map.checkTile(tilePos.x, tilePos.y);
-			}
-			//Flag
-			if(eventKey == 2 && !map.tileMap[tilePos.x][tilePos.y].isChecked) {
-				if(map.tileMap[tilePos.x][tilePos.y].isFlagged) {
-					map.tileMap[tilePos.x][tilePos.y].isFlagged = false; 
-					map.remainingFlags++; 
+				break;
+			case FLAG:
+				if(!map.tileMap[tilePos.x][tilePos.y].isChecked) {
+					if(map.tileMap[tilePos.x][tilePos.y].isFlagged) {
+						map.tileMap[tilePos.x][tilePos.y].isFlagged = false; 
+						map.remainingFlags++; 
+					}
+					else
+					{
+						map.tileMap[tilePos.x][tilePos.y].isFlagged = true; 
+						map.remainingFlags--; 
+						map.checkWin();	
+					}
 				}
-				else
-				{
-					map.tileMap[tilePos.x][tilePos.y].isFlagged = true; 
-					map.remainingFlags--; 
-					map.checkWin();	
-				}
-			}
-			//Restart
-			if(eventKey == 3) {
+				break;
+			case RESET:
 				//On the next line, the Map constructor resets 'minesRemaning'.  
 				map = new Map(this, new Point(0, 0), Settings.tileCountX, Settings.tileCountY, Settings.mineCount);
 				end_Loss = false;
 				end_Win = false;
 				firstDig = true;
-				player.reset();
 				// The value 'minesRemaning' is not reset at this point in this method, since it's already reset in the Map constructor that is called.
-			}
-			viewer.repaint();
+				break;
+			default:
+				break;
 		}
+		viewer.repaint();
 	}
 }

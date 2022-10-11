@@ -60,60 +60,41 @@ public class Minesweep{
 		//Add keyListeners
 		frame.addKeyListener(new KeyAdapter() {
 			public void keyReleased(KeyEvent e) {
-				int eventKey = 0;
+				Action action = Action.NONE;
 				
-				//Dig
 				if(e.getKeyChar() == 'd')
-					eventKey = 1;
+					action = Action.DIG;
 				
-				//Flag
 				if(e.getKeyChar() == 'f')
-					eventKey = 2;
+					action = Action.FLAG;
 				
-				//Reset
 				if (e.getKeyChar() == 'r')
-					eventKey = 3;
+					action = Action.RESET;
 
-				//Finish
-				action(eventKey);
+				action(action);
 			}
 		});
 		frame.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				int eventKey = 0;
+				Action action = Action.NONE;
 				
-				//Dig
 				if(SwingUtilities.isLeftMouseButton(e))
-					eventKey = 1;	
+					action = Action.DIG;	
 				
-				//Flag
 				if(SwingUtilities.isRightMouseButton(e))
-					eventKey = 2;
+					action = Action.FLAG;
 				
-				//Reset
 				if (SwingUtilities.isMiddleMouseButton(e))
-					eventKey = 3;
+					action = Action.RESET;
 				
-				//Finish
-				action(eventKey);
+				action(action);
 			}
 		});
 		
 		frame.setVisible(true);
 	}
 	
-	private static void action(int eventKey) {
-		//This prevents any action but reset to go through if the game has been lost. 
-		
-		if ((game.end_Loss || game.end_Win) && eventKey != 3) {
-			eventKey = 0; 
-		}
-		//Event == 0: nothing 
-		//Event == 1: dig
-		//Event == 2: flag
-		//Event == 3: reset
-		
-		//MousePos
+	private static void action(Action action) {
 		Point mousePos = new Point(
 			MouseInfo.getPointerInfo().getLocation().x - frame.getLocationOnScreen().getLocation().x, 
 			MouseInfo.getPointerInfo().getLocation().y - frame.getLocationOnScreen().getLocation().y
@@ -122,7 +103,7 @@ public class Minesweep{
 		Point newPos = Settings.tileFromPixels(mousePos.x, mousePos.y);
 		
 		if(game.map.isTileWithinBounds(newPos.x, newPos.y)) {
-			game.action(eventKey, newPos);
+			game.action(action, newPos);
 		}
 	}
 }
