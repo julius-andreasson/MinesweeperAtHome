@@ -12,8 +12,7 @@ enum Action {
 
 public class Game {
 	Map map;
-	JPanel viewer;
-	InputHandler inputHandler = new InputHandler();
+	JPanel viewer = new StandardViewer(this);
 	int tilesToWin;
 
 	/**
@@ -34,8 +33,6 @@ public class Game {
 
     	//Initializing the 'map', 'viewer' and 'frame' variables.
 		map = new Map(this, Settings.startingPoint, Settings.tileCountX, Settings.tileCountY, Settings.mineCount);
-
-		viewer = new StandardViewer(this);
   	}
 
 	void run() {
