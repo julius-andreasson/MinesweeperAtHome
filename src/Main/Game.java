@@ -21,7 +21,6 @@ public class Game {
 	 * end_Loss describes if the current round is lost.
 	 * end_Win describes if the current round is won. 
 	 * firstDig describes if the next dig will be the first. If so, generate the map after the dig. 
-	 * DEBUG describes if the game is in debug mode. 
 	 */
 	boolean 
 		end_Loss 	= false,
@@ -34,19 +33,6 @@ public class Game {
     	//Initializing the 'map', 'viewer' and 'frame' variables.
 		map = new Map(this, Settings.startingPoint, Settings.tileCountX, Settings.tileCountY, Settings.mineCount);
   	}
-
-	void run() {
-		while (true) {
-			try {
-				Thread.sleep(16L);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-
-			// Loop final step
-			viewer.repaint();
-		}
-	}
 
   	void action(Action action, Point tilePos) {
 		//This prevents any action but reset to go through if the game has been lost. 
