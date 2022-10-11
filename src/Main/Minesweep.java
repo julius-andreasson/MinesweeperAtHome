@@ -2,15 +2,15 @@ package Main;
 
 import java.awt.Dimension;
 import java.awt.MouseInfo;
-import Utils.Point;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+
+import Utils.Point;
 
 public class Minesweep{
 	/**
@@ -27,24 +27,21 @@ public class Minesweep{
 	 * topUISizeY sets the size of the UI at the top of the window.
 	 */
 	static final int
-			tileSizeX = 30, 
-			tileSizeY = 30,
-			tileCountX = 16,
-			tileCountY = 16,
-			mineCount = 40,
-			tileSpacingX = 3, 
-			tileSpacingY = 3,
-			borderSizeX = 20,
-			borderSizeY = 20,
-			topUISizeY = 50;
+		tileSizeX = 30, 
+		tileSizeY = 30,
+		tileCountX = 16,
+		tileCountY = 16,
+		mineCount = 40,
+		tileSpacingX = 3, 
+		tileSpacingY = 3,
+		borderSizeX = 20,
+		borderSizeY = 20,
+		topUISizeY = 50;
 	
-	private static Game game;
-	private static JFrame frame;
+	private static Game game = new Game();
+	private static JFrame frame = new JFrame("MinesweeperAtHome");
 
 	public static void main(String[] args) {
-		game = new Game();
-
-		frame = new JFrame("MinesweeperAtHome");
 		//Set the frame to terminate the program when closed.
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		
@@ -60,34 +57,38 @@ public class Minesweep{
 		//Add keyListeners
 		frame.addKeyListener(new KeyAdapter() {
 			public void keyReleased(KeyEvent e) {
-				Action action = Action.NONE;
-				
-				if(e.getKeyChar() == 'd')
-					action = Action.DIG;
-				
-				if(e.getKeyChar() == 'f')
-					action = Action.FLAG;
-				
-				if (e.getKeyChar() == 'r')
-					action = Action.RESET;
-
-				action(action);
+				switch (e.getKeyChar()) {
+					case 'd':
+						action(Action.DIG);
+						break;
+					case 'f':
+						action(Action.FLAG);
+						break;
+					case 'r':
+						action(Action.RESET);
+						break;
+					default:
+						action(Action.NONE);
+						break;
+				}
 			}
 		});
 		frame.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				Action action = Action.NONE;
-				
-				if(SwingUtilities.isLeftMouseButton(e))
-					action = Action.DIG;	
-				
-				if(SwingUtilities.isRightMouseButton(e))
-					action = Action.FLAG;
-				
-				if (SwingUtilities.isMiddleMouseButton(e))
-					action = Action.RESET;
-				
-				action(action);
+				switch (e.getButton()) {
+					case MouseEvent.BUTTON1:
+						action(Action.DIG);
+						break;
+					case MouseEvent.BUTTON2:
+						action(Action.FLAG);
+						break;
+					case MouseEvent.BUTTON3:
+						action(Action.RESET);
+						break;
+					default:
+						action(Action.NONE);
+						break;
+				}
 			}
 		});
 		
