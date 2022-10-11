@@ -36,38 +36,40 @@ public class Game {
   	}
 
   	public void action(Action action, Point tilePos) {
-		//This prevents any action but reset to go through if the game has been lost. 
-		if (state != State.ONGOING && action != Action.RESET) {
-			action = Action.NONE;
-		}
+		if (isTileWithinBounds(tilePos)) {
+			//This prevents any action but reset to go through if the game has been lost. 
+			if (state != State.ONGOING && action != Action.RESET) {
+				action = Action.NONE;
+			}
 
-		switch (action) {
-			case DIG:
-				if (firstDig) {
+			switch (action) {
+				case DIG:
+					if (firstDig) {
+						newMap();
+						firstDig = false;
+					}
+					if (map.checkTile(tilePos)) {
+						clickedMine();
+					}
+					if (map.checkWin()) {
+						state = State.WON;
+					}
+					break;
+				case FLAG:
+					if(!map.isChecked(tilePos)) {
+						map.toggleFlagged(tilePos);
+					}
+					break;
+				case RESET:
+					//On the next line, the Map constructor resets 'minesRemaning'.  
 					newMap();
-					firstDig = false;
-				}
-				if (map.checkTile(tilePos)) {
-					clickedMine();
-				}
-				if (map.checkWin()) {
-					state = State.WON;
-				}
-				break;
-			case FLAG:
-				if(!map.isChecked(tilePos)) {
-					map.toggleFlagged(tilePos);
-				}
-				break;
-			case RESET:
-				//On the next line, the Map constructor resets 'minesRemaning'.  
-				newMap();
-				state = State.ONGOING;
-				firstDig = true;
-				// The value 'minesRemaning' is not reset at this point in this method, since it's already reset in the Map constructor that is called.
-				break;
-			default:
-				break;
+					state = State.ONGOING;
+					firstDig = true;
+					// The value 'minesRemaning' is not reset at this point in this method, since it's already reset in the Map constructor that is called.
+					break;
+				default:
+					break;
+			}
 		}
 	}
 
@@ -79,7 +81,7 @@ public class Game {
 		state = State.LOST;
     }
 
-	public boolean isTileWithinBounds(Point newPos) {
+	private boolean isTileWithinBounds(Point newPos) {
 		return map.isTileWithinBounds(newPos);
 	}
 

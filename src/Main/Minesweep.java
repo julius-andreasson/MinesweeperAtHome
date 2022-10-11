@@ -81,10 +81,8 @@ public class Minesweep {
 
 		Point newPos = Settings.tileFromPixels(mousePos.x, mousePos.y);
 		
-		if(game.isTileWithinBounds(newPos)) {
-			game.action(action, newPos);
-			viewer.repaint();
-		}
+		game.action(action, newPos);
+		viewer.repaint();
 	}
 
 	public static void main(String[] args) {
