@@ -1,6 +1,4 @@
-package Main;
-
-import Utils.Point;
+package Utils;
 
 public class Settings {
     /**
@@ -52,6 +50,8 @@ public class Settings {
      * topUISizeY sets the size of the UI at the top of the window.
      */
     public static final int topUISizeY = 50;
+
+    public static final int tilesToWin = tileCountX * tileCountY - mineCount;
 
     /**
      * debug
