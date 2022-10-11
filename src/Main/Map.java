@@ -1,6 +1,9 @@
 package Main;
 
 import Utils.Point;
+import Utils.Settings;
+import Utils.Util;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -8,22 +11,16 @@ import java.util.Queue;
 
 public class Map{
 
-	Game game;
-
-	Tile[][] tileMap;
-	
-	int 
-		remainingFlags, 
-		tilesDugUp;
+	private Tile[][] tileMap;
+	private int remainingFlags;
+	private int tilesCleared;
 	
 	/**
 	 * @param xSize
 	 * @param ySize
 	 * @param mineCount
 	 */
-	public Map(Game _game, Point startingPoint, int xSize, int ySize, int mineCount) {
-		game = _game;
-
+	public Map(Point startingPoint, int xSize, int ySize, int mineCount) {
 		//Initialize TileMap
 		tileMap = new Tile[xSize][ySize];
 		
@@ -40,9 +37,9 @@ public class Map{
 		
 		for (int n = 0; n < mineMap.length; n++) {
 			tileMap[mineMap[n].x][mineMap[n].y].hasMine = true;
-			remainingFlags = mineCount;
-			tilesDugUp = 0;
-			//DEBUG options
+			
+			// tilesDugUp = 0;
+			//DEBUG actions
 			if (Settings.debug) { 
 				tileMap[mineMap[n].x][mineMap[n].y].isFlagged = true;
 				remainingFlags = 0;
@@ -52,163 +49,6 @@ public class Map{
 		for (int x = 0; x < xSize; x++) {
 			for (int y = 0; y < ySize; y++) {
 				tileMap[x][y].surroundingMines = calcSurroundingMines(x, y);
-			}
-		}
-	}
-	
-	/**
-	 * A method that checks the 8 surrounding tiles for mines.
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	private int calcSurroundingMines(int x, int y) {
-		int sum = 0;
-		Point[] surroundingTiles = getSurroundingTiles(x, y);
-		for (Point p : surroundingTiles) {
-			if(tileMap[p.x][p.y].hasMine) {
-				sum++;
-			}
-		}	
-		return sum;
-	}
-	
-	private Point[] getSurroundingTiles(int x, int y) {
-		//Generate an ArrayList with points representing points in the TileMap.
-		ArrayList<Point> surroundingTilesList = new ArrayList<Point>();
-		/*
-		 * For each tile in a 9-tile square centered on the tile in question;
-		 * If it exists, and is not the 'tile in question';
-		 * Add it to the list of 'surroundingTilesList'
-		 */
-		for (int dx = -1; dx < 2; dx++) {
-			for (int dy = -1; dy < 2; dy++) {
-				if (isTileWithinBounds(x + dx, y + dy) && !(dx == 0 && dy == 0)) {
-					surroundingTilesList.add(new Point(x + dx, y + dy));
-				}
-			}
-		}
-		
-		//Convert the ArrayList to an array and return the finished product.
-		return surroundingTilesList.toArray(new Point[0]);
-	}
-
-	private Point[] getNext(int x, int y) {
-		//Generate an ArrayList with points representing each point in the TileMap.
-		ArrayList<Point> surroundingTilesList = new ArrayList<Point>();
-		/*
-		* For each tile next to the tile in question;
-		* If it exists, add it to the list of 'surroundingTilesList'
-		*/
-		Point[] points = {
-			new Point(x - 1, y),
-			new Point(x + 1, y),
-			new Point(x, y - 1),
-			new Point(x, y + 1)
-		};
-		for (Point p : points) {
-			if (isTileWithinBounds(p.x, p.y)) {
-				surroundingTilesList.add(p);
-			}
-		}
-
-		//Convert the ArrayList to an array and return the finished product.
-		return surroundingTilesList.toArray(new Point[0]);
-	}
-
-	// A flood-fill function that find an interconnected area
-	private Point[] getAdjecentZeroes(int x, int y) {
-    // Initialize a queue. Add the starting point to it.
-		Queue<Point> frontier = new LinkedList<Point>();
-		frontier.add(new Point(x, y));
-
-		// Create an array and fill it with false. 
-		Boolean[][] reached = new Boolean[tileMap.length][tileMap[0].length];
-		for (int i = 0; i < tileMap.length; i++){
-			Arrays.fill(reached[i], false);
-		}
-		reached[x][y] = true;
-    
-    while (!frontier.isEmpty()) {
-			Point current = frontier.remove();
-
-			for (Point next : getNext(current.x, current.y)) {
-				if (!reached[next.x][next.y]) {
-					reached[next.x][next.y] = true;
-					if (tileMap[next.x][next.y].surroundingMines == 0) {
-						frontier.add(next);
-						if (tileMap[next.x][next.y].isFlagged) {
-							tileMap[next.x][next.y].isFlagged = false;
-							remainingFlags++;
-						}
-					}
-				}
-			}
-		}
-
-		// Generate an empty ArrayList.
-		ArrayList<Point> res = new ArrayList<Point>();
-		// Iterate through "reached" and add all the reached points to res.
-		for (int i = 0; i < reached.length; i++){
-			for (int j = 0; j < reached[0].length; j++) {
-				if (reached[i][j]) {
-					res.add(new Point(i, j));
-				}
-			}
-		}
-		//Convert the ArrayList to an array and return it.
-		return res.toArray(new Point[0]);
-	}
-	
-	/**
-	 * A method that checks if the specified tile is within the bounds.
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	Boolean isTileWithinBounds(int x, int y) {
-		//If the point is within the bounds, then return 'true':
-		return (x >= 0 && x < tileMap.length &&
-				y >= 0 && y < tileMap[0].length);
-	}
-
-	// Checks a tile. 
-	private void check(int x, int y) {
-		//Check if it's already checked - if it is, don't bother redoing it - this to avoid counting the point twice.
-		if (!tileMap[x][y].isChecked) {
-			tilesDugUp++;
-			tileMap[x][y].isChecked = true;
-			checkWin();
-		}
-	}
-
-	/**
-	 * When a tile is turned _Checked_, it's either a mine (in which case you lose) or not (in which case a chain reaction might be appropriate).
-	 * @param x
-	 * @param y
-	 */
-	void checkTile(int x, int y) {
-		if(!tileMap[x][y].isFlagged) {
-			if(tileMap[x][y].hasMine) {
-				game.end_Loss = true;
-			}
-			else
-			{
-				check(x, y);
-				
-				//If the tile has no nearby mines; clear all adjecent tiles with no surrounding mines.
-				if(tileMap[x][y].surroundingMines == 0) {
-
-					//Get surrounding tiles and check each of them. 
-					for (Point p : getAdjecentZeroes(x, y)) {
-						check(p.x, p.y);
-						
-						if (tileMap[p.x][p.y].isFlagged) {
-							tileMap[p.x][p.y].isFlagged = false;
-							remainingFlags++;
-						}
-					}
-				}
 			}
 		}
 	}
@@ -238,7 +78,7 @@ public class Map{
 		int curr;
 		for (int n = 0; n < mineCount; n++) {
 			//Generate a random number within the bounds of the 'pointSelectionList'. -1 to keep within bounds.
-			curr = randomNumber(0, pointSelectionList.size() - 1);
+			curr = Util.randomNumber(0, pointSelectionList.size() - 1);
 			//Pick the point at this number.
 			returnArray[n] = pointSelectionList.get(curr).copy();
 			//Each time a point is selected, remove it from the 'pointSelectionList' to avoid doubles.
@@ -248,25 +88,211 @@ public class Map{
 		//Return the finished array of 'mineCount' amount of Points, at which mines will be placed.
 		return returnArray;
 	}
+	
+	/**
+	 * A method that checks the 8 surrounding tiles for mines.
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	private int calcSurroundingMines(int x, int y) {
+		int sum = 0;
+		Point[] surroundingTiles = getSurroundingTiles(x, y);
+		for (Point p : surroundingTiles) {
+			if(tileMap[p.x][p.y].hasMine) {
+				sum++;
+			}
+		}	
+		return sum;
+	}
+	
+	private Point[] getSurroundingTiles(int x, int y) {
+		//Generate an ArrayList with points representing points in the TileMap.
+		ArrayList<Point> surroundingTilesList = new ArrayList<Point>();
+		/*
+		 * For each tile in a 9-tile square centered on the tile in question;
+		 * If it exists, and is not the 'tile in question';
+		 * Add it to the list of 'surroundingTilesList'
+		 */
+		for (int dx = -1; dx < 2; dx++) {
+			for (int dy = -1; dy < 2; dy++) {
+				if (isTileWithinBounds(new Point(x + dx, y + dy)) && !(dx == 0 && dy == 0)) {
+					surroundingTilesList.add(new Point(x + dx, y + dy));
+				}
+			}
+		}
+		
+		//Convert the ArrayList to an array and return the finished product.
+		return surroundingTilesList.toArray(new Point[0]);
+	}
+
+	private Point[] getNext(int x, int y) {
+		//Generate an ArrayList with points representing each point in the TileMap.
+		ArrayList<Point> surroundingTilesList = new ArrayList<Point>();
+		/*
+		* For each tile next to the tile in question;
+		* If it exists, add it to the list of 'surroundingTilesList'
+		*/
+		Point[] points = {
+			new Point(x - 1, y),
+			new Point(x + 1, y),
+			new Point(x, y - 1),
+			new Point(x, y + 1)
+		};
+		for (Point p : points) {
+			if (isTileWithinBounds(p)) {
+				surroundingTilesList.add(p);
+			}
+		}
+
+		//Convert the ArrayList to an array and return the finished product.
+		return surroundingTilesList.toArray(new Point[0]);
+	}
+
+	// A flood-fill function that find an interconnected area
+	private Point[] getAdjecentZeroes(Point p) {
+    // Initialize a queue. Add the starting point to it.
+		Queue<Point> frontier = new LinkedList<Point>();
+		frontier.add(p);
+
+		// Create an array and fill it with false. 
+		Boolean[][] reached = new Boolean[tileMap.length][tileMap[0].length];
+		for (int i = 0; i < tileMap.length; i++){
+			Arrays.fill(reached[i], false);
+		}
+		reached[p.x][p.y] = true;
+    
+		while (!frontier.isEmpty()) {
+			Point current = frontier.remove();
+
+			for (Point next : getNext(current.x, current.y)) {
+				if (!reached[next.x][next.y]) {
+					reached[next.x][next.y] = true;
+					if (getSurroundingMines(next) == 0) {
+						frontier.add(next);
+						if (isFlagged(next)) {
+							setFlagged(next, false);
+						}
+					}
+				}
+			}
+		}
+
+		// Generate an empty ArrayList.
+		ArrayList<Point> res = new ArrayList<Point>();
+		// Iterate through "reached" and add all the reached points to res.
+		for (int i = 0; i < reached.length; i++){
+			for (int j = 0; j < reached[0].length; j++) {
+				if (reached[i][j]) {
+					res.add(new Point(i, j));
+				}
+			}
+		}
+		//Convert the ArrayList to an array and return it.
+		return res.toArray(new Point[0]);
+	}
+	
+	/**
+	 * A method that checks if the specified tile is within the bounds.
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	Boolean isTileWithinBounds(Point p) {
+		//If the point is within the bounds, then return 'true':
+		return (p.x >= 0 && p.x < tileMap.length &&
+				p.y >= 0 && p.y < tileMap[0].length);
+	}
+
+	// Checks a tile. 
+	private void check(Point p) {
+		//Check if it's already checked - if it is, don't bother redoing it - this to avoid counting the point twice.
+		if (!isChecked(p)) {
+			tilesCleared++;
+			setChecked(p, true);
+		}
+	}
+
+	/**
+	 * When a tile is turned _Checked_, it's either a mine (in which case you lose) or not (in which case a chain reaction might be appropriate).
+	 * @param x
+	 * @param y
+	 */
+	boolean checkTile(Point p1) {
+		if(!isFlagged(p1)) {
+			if(tileMap[p1.x][p1.y].hasMine) {
+				return true;
+			}
+			else
+			{
+				check(p1);
+				
+				//If the tile has no nearby mines; clear all adjecent tiles with no surrounding mines.
+				if(tileMap[p1.x][p1.y].surroundingMines == 0) {
+
+					//Get surrounding tiles and check each of them. 
+					for (Point p : getAdjecentZeroes(p1)) {
+						check(p);
+						
+						if (isFlagged(p)) {
+							setFlagged(p, false);
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+    public boolean isChecked(Point tilePos) {
+        return tileMap[tilePos.x][tilePos.y].isChecked;
+    }
+
+    public boolean isFlagged(Point tilePos) {
+        return tileMap[tilePos.x][tilePos.y].isFlagged;
+    }
+
+	public void setChecked(Point tilePos, boolean b) {
+		tileMap[tilePos.x][tilePos.y].isChecked = b;
+	}
+
+    public void setFlagged(Point tilePos, boolean b) {
+		tileMap[tilePos.x][tilePos.y].isFlagged = b;
+		remainingFlags += b ? 1 : -1;
+    }
 
 	/**
 	 * This is a separate method since it has to be checked both when a tile is cleared and when a flag is placed.
 	 */
-	void checkWin() {
+	public boolean checkWin() {
 		//If all the flags are placed and all the empty tiles are dug up, the player wins.
-		if (tilesDugUp == game.tilesToWin && remainingFlags == 0) {
+		if (tilesCleared == Settings.tilesToWin && remainingFlags == 0) {
 			//The player beat the game!
-			game.end_Win = true;
+			return true;
+		} else {
+			return false;
 		}
 	}
-	
-	/**
-	 * Returns a random integer min <= int <= max.
-	 * @param min
-	 * @param max
-	 * @return
-	 */
-	int randomNumber(int min, int max) {
-		return (int)Math.round((Math.random() * (max - min) + min));
+
+	public void toggleFlagged(Point tilePos) {
+		boolean b = tileMap[tilePos.x][tilePos.y].isFlagged;
+		tileMap[tilePos.x][tilePos.y].isFlagged = !b;
+		remainingFlags += b ? -1 : 1;
 	}
+
+	public String getTilesCleared() {
+		return Integer.toString(tilesCleared);
+	}
+
+    public boolean hasMine(Point p) {
+        return tileMap[p.x][p.y].hasMine;
+    }
+
+    public int getSurroundingMines(Point p) {
+        return tileMap[p.x][p.y].surroundingMines;
+    }
+
+    public String getRemainingFlags() {
+        return Integer.toString(remainingFlags);
+    }
 }
