@@ -1,82 +1,30 @@
 package Main;
 
 public class InputHandler {
-  boolean
-    up,
-    left,
-    down,
-    right,
-    sprint,
-    dig,
-    flag,
-    reset;
-  
+  private boolean[] isDown = new boolean[100];
+
+  public static final int
+    UP = 38,
+    LEFT = 37,
+    DOWN = 40,
+    RIGHT = 39,
+    SPRINT = 16,
+    DIG = 68,
+    FLAG = 70,
+    RESET = 82;
+
   public InputHandler(){}
 
   public void keyPressed(int keyCode){
-    switch (keyCode) {
-      // Movement keys
-      case 38:
-      up = true;
-      break;
-      case 37:
-      left = true;
-      break;
-      case 40:
-      down = true;
-      break;
-      case 39:
-      right = true;
-      break;
-      case 16:
-      sprint = true;
-      break;
-      // Other input
-      case 68:
-      dig = true;
-      break;
-      case 70:
-      flag = true;
-      break;
-      case 82:
-      reset = true;
-      break;
-      default:
-      break;
-    }
+    isDown[keyCode] = true;
   }
 
   public void keyReleased(int keyCode){
-    switch (keyCode) {
-      // Movement keys
-      case 38:
-      up = false;
-      break;
-      case 37:
-      left = false;
-      break;
-      case 40:
-      down = false;
-      break;
-      case 39:
-      right = false;
-      break;
-      case 16:
-      sprint = false;
-      break;
-      // Other input
-      case 68:
-      dig = false;
-      break;
-      case 70:
-      flag = false;
-      break;
-      case 82:
-      reset = false;
-      break;
-      default:
-      if (Settings.debug) {System.out.println(keyCode);}
-      break;
-    }
+    isDown[keyCode] = false;
+    if (Settings.debug) {System.out.println(keyCode);}
+  }
+
+  public boolean isDown(int i) {
+    return isDown[i];
   }
 }
