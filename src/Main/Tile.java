@@ -22,9 +22,5 @@ class Tile {
 	 */
 	int surroundingMines = 0;
 	
-	/**
-	 * Constructor method
-	 */
-	Tile() {
-	}
+	Tile() {}
 }
