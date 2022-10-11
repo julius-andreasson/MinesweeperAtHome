@@ -26,7 +26,7 @@ public class Minesweep{
 	 * borderSizeY sets the size of the spacing between the different areas of the playing area in the y-dimension.
 	 * topUISizeY sets the size of the UI at the top of the window.
 	 */
-	static final int
+	private static final int
 		tileSizeX = 30, 
 		tileSizeY = 30,
 		tileCountX = 16,
@@ -38,10 +38,10 @@ public class Minesweep{
 		borderSizeY = 20,
 		topUISizeY = 50;
 	
-	private static Game game = new Game();
-	private static JFrame frame = new JFrame("MinesweeperAtHome");
+	private Game game = new Game();
+	private JFrame frame = new JFrame("MinesweeperAtHome");
 
-	public static void main(String[] args) {
+	public Minesweep() {
 		//Set the frame to terminate the program when closed.
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		
@@ -95,7 +95,7 @@ public class Minesweep{
 		frame.setVisible(true);
 	}
 	
-	private static void action(Action action) {
+	private void action(Action action) {
 		Point mousePos = new Point(
 			MouseInfo.getPointerInfo().getLocation().x - frame.getLocationOnScreen().getLocation().x, 
 			MouseInfo.getPointerInfo().getLocation().y - frame.getLocationOnScreen().getLocation().y
@@ -106,5 +106,9 @@ public class Minesweep{
 		if(game.map.isTileWithinBounds(newPos.x, newPos.y)) {
 			game.action(action, newPos);
 		}
+	}
+
+	public static void main(String[] args) {
+		new Minesweep();
 	}
 }
