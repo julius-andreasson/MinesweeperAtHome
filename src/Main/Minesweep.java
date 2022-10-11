@@ -11,10 +11,12 @@ import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
 import Utils.Point;
+import Utils.Settings;
 
 public class Minesweep {
 
 	private Game game = new Game();
+	private StandardViewer viewer = new StandardViewer(game);
 	private JFrame frame = new JFrame("MinesweeperAtHome");
 
 	public Minesweep() {
@@ -28,7 +30,7 @@ public class Minesweep {
 				Settings.borderSizeY * 3 + Settings.topUISizeY + Settings.tileCountY * Settings.tileSizeY + (Settings.tileCountY - 1) * Settings.tileSpacingY
 				));
 		frame.pack();
-		frame.add(game.viewer);
+		frame.add(viewer);
 		
 		//Add keyListeners
 		frame.addKeyListener(new KeyAdapter() {
@@ -79,8 +81,9 @@ public class Minesweep {
 
 		Point newPos = Settings.tileFromPixels(mousePos.x, mousePos.y);
 		
-		if(game.map.isTileWithinBounds(newPos.x, newPos.y)) {
+		if(game.isTileWithinBounds(newPos)) {
 			game.action(action, newPos);
+			viewer.repaint();
 		}
 	}
 
