@@ -10,16 +10,10 @@ import javax.swing.JPanel;
 public class StandardViewer extends JPanel {
 	Game game;
 
-	/**
-	 * Constructor
-	 */
-	public StandardViewer (Game _game) {
-		game = _game;
+	public StandardViewer (Game game) {
+		this.game = game;
 	}
 	
-	/**
-	 * 
-	 */
 	public void paint(Graphics g) {
 		g.setColor(Color.white);
 		g.fillRect(0, 0, this.getWidth(), this.getHeight());
