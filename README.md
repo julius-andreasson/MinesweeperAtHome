@@ -1,6 +1,6 @@
 # MinesweeperAtHome
 
-A Minesweeper clone written in Java. 
+A Minesweeper clone written in Java. It works, but is missing some features and some parts of the code are rather messy.
 
 Use 'D' to dig, 'F' to flag, and 'R' to reset the round.
 
