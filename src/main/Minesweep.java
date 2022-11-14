@@ -1,4 +1,4 @@
-package Main;
+package main;
 
 import java.awt.Dimension;
 import java.awt.MouseInfo;
@@ -10,8 +10,8 @@ import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
-import Utils.Point;
-import Utils.Settings;
+import utils.Point;
+import utils.Settings;
 
 public class Minesweep {
 

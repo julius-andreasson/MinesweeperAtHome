@@ -1,13 +1,13 @@
-package Main;
-
-import Utils.Point;
-import Utils.Settings;
-import Utils.Util;
+package main;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
+
+import utils.Point;
+import utils.Settings;
+import utils.Util;
 
 public class Map{
 
@@ -16,6 +16,7 @@ public class Map{
 	private int tilesCleared;
 	
 	/**
+	 * @param startingPoint
 	 * @param xSize
 	 * @param ySize
 	 * @param mineCount

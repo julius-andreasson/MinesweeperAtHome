@@ -1,12 +1,13 @@
-package Main;
+package main;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import Utils.Point;
-import Utils.Settings;
 
 import javax.swing.JPanel;
+
+import utils.Point;
+import utils.Settings;
 
 public class StandardViewer extends JPanel {
 	private Game game;

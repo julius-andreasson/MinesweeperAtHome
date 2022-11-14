@@ -1,7 +1,7 @@
-package Main;
+package main;
 
-import Utils.Point;
-import Utils.Settings;
+import utils.Point;
+import utils.Settings;
 
 enum Action {
 	NONE,
@@ -20,13 +20,6 @@ public class Game {
 	public State state;
 	private Map map;
 
-	/**
-	 * There are two different end variables since they keep track of two things;
-	 * if the round is still going or is over; and which of the two possible outcomes was reached.
-	 * end_Loss describes if the current round is lost.
-	 * end_Win describes if the current round is won. 
-	 * firstDig describes if the next dig will be the first. If so, generate the map after the dig. 
-	 */
 	private boolean firstDig = true;
   
 	public Game(){
@@ -45,6 +38,10 @@ public class Game {
 			switch (action) {
 				case DIG:
 					if (firstDig) {
+						/* In order to avoid the risk of losing on your first dig,
+						 * this first dig should be handled differently.
+						 * This is not implemented yet.
+						 */
 						newMap();
 						firstDig = false;
 					}
@@ -81,8 +78,8 @@ public class Game {
 		state = State.LOST;
     }
 
-	private boolean isTileWithinBounds(Point newPos) {
-		return map.isTileWithinBounds(newPos);
+	private boolean isTileWithinBounds(Point p) {
+		return map.isTileWithinBounds(p);
 	}
 
 	public String getTilesCleared() {
