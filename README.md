@@ -5,7 +5,9 @@ A Minesweeper clone written in Java. It works, but is missing some features and 
 Use 'D' to dig, 'F' to flag, and 'R' to reset the round.
 
 Roadmap:
+* The selection of tiles using the mouse is slightly off - fix this.
 * Movement using arrow keys. 
+    * Shift-key to sprint: jumps `x` tiles per arrow key press.
 * Rethink class structure. There are many oddities due to the current division of responsibility between classes.
 * Clean up the code. 
 * Make the UI nice. 
