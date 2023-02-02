@@ -17,7 +17,7 @@ enum State {
 }
 
 public class Game {
-	public State state;
+	private State state;
 	private Map map;
 
 	private boolean firstDig = true;
@@ -74,7 +74,11 @@ public class Game {
 		map = new Map(new Point(0, 0), Settings.tileCountX, Settings.tileCountY, Settings.mineCount);
 	}
 
-    public void clickedMine() {
+	public State getState() {
+		return state;
+	}
+
+    private void clickedMine() {
 		state = State.LOST;
     }
 
