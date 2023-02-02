@@ -33,10 +33,10 @@ public class StandardViewer extends JPanel {
 		//Draw text; game-over if (end_Loss)
 		g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, Settings.tileSizeY - 3));
 		g.setColor(Color.black);
-		if (game.state == State.LOST) {
+		if (game.getState() == State.LOST) {
 			g.drawString("Game over! Press 'R' to restart.", Settings.borderSizeX - 5, Settings.borderSizeY + 20);
 			g.drawString("You cleared " + (game.getTilesCleared()) + " out of " + (Settings.tilesToWin) + " tiles.", Settings.borderSizeX - 5, Settings.borderSizeY + 25 + Settings.tileSizeY);
-		} else if (game.state == State.WON){
+		} else if (game.getState() == State.WON){
 			g.drawString("You've won! Press 'R' to restart.", Settings.borderSizeX, Settings.borderSizeY + 20);
 			g.drawString("You cleared " + (game.getTilesCleared()) + " out of " + (Settings.tilesToWin) + " tiles.", Settings.borderSizeX - 5, Settings.borderSizeY + 25 + Settings.tileSizeY);
 		} else {
@@ -65,7 +65,7 @@ public class StandardViewer extends JPanel {
 		g.setColor(tileColor);
 		g.fillRect(pos.x, pos.y, Settings.tileSizeX, Settings.tileSizeY);
 		//If the player has lost the game, draw a mine on the current tile if it 'hasMine'. 
-		if (game.state != State.ONGOING && game.hasMine(p)) {
+		if (game.getState() != State.ONGOING && game.hasMine(p)) {
 			//Set the color of the mines. 
 			g.setColor(Color.black);
 			//Draw an oval that represents a mine. 
