@@ -58,7 +58,7 @@ public class Map{
 	 * A method that generates a random point, and then checks that isn't already in rndMap.
 	 * @param mineCount
 	 */
-	Point[] generateMineMap(Point startPoint, int width, int height, int mineCount) {
+	private Point[] generateMineMap(Point startPoint, int width, int height, int mineCount) {
 		//Generate an ArrayList with points representing each point in the TileMap.
 		ArrayList<Point> pointSelectionList = new ArrayList<Point>();
 		for (int x = 0; x < width; x++) {
