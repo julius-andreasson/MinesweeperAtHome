@@ -6,10 +6,12 @@ Use 'D' to dig, 'F' to flag, and 'R' to reset the round.
 
 Roadmap:
 * The selection of tiles using the mouse is slightly off - fix this.
-* Movement using arrow keys. 
+* Rethink class structure.
+    * There are many oddities due to the current division of responsibility between classes.
+    * Introduce interfaces between classes. (Dependency Inversion Principle)
+* Clean up the code.
+* Movement using arrow keys.
     * Shift-key to sprint: jumps `x` tiles per arrow key press.
-* Rethink class structure. There are many oddities due to the current division of responsibility between classes.
-* Clean up the code. 
 * Make the UI nice. 
 * Map generation that never creates situations where the player has to rely on chance. 
 
