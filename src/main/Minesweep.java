@@ -45,6 +45,9 @@ public class Minesweep {
 					case 'r':
 						action(Action.RESET);
 						break;
+					case 'q':
+						System.exit(0);
+						break;
 					default:
 						action(Action.NONE);
 						break;
