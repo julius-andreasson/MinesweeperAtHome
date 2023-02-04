@@ -39,10 +39,9 @@ public class Game {
 				case DIG:
 					if (firstDig) {
 						/* In order to avoid the risk of losing on your first dig,
-						 * this first dig should be handled differently.
-						 * This is not implemented yet.
+						 * this first dig is handled differently.
 						 */
-						newMap();
+						newMap(tilePos);
 						firstDig = false;
 					}
 					if (map.checkTile(tilePos)) {
@@ -71,7 +70,15 @@ public class Game {
 	}
 
 	private void newMap() {
-		map = new Map(new Point(0, 0), Settings.tileCountX, Settings.tileCountY, Settings.mineCount);
+		newMap(new Point(0, 0));
+	}
+
+	/**
+	 * Creates a new map, which does not have a mine at tilePos.
+	 * @param tilePos
+	 */
+	private void newMap(Point tilePos) {
+		map = new Map(tilePos, Settings.tileCountX, Settings.tileCountY, Settings.mineCount);
 	}
 
 	public State getState() {
