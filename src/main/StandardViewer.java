@@ -48,7 +48,7 @@ public class StandardViewer extends JPanel {
 	
 	public void paintTile(Graphics g, Point p) {
 		Color tileColor, stringColor; 
-		Point pos = Settings.pixelsFromTile(p.x, p.y);
+		Point pos = Settings.pixelsFromTile(p.x(), p.y());
 		
 		if (game.isChecked(p)) {
 			tileColor = Color.lightGray; 
@@ -63,20 +63,20 @@ public class StandardViewer extends JPanel {
 			}
 		}
 		g.setColor(tileColor);
-		g.fillRect(pos.x, pos.y, Settings.tileSizeX, Settings.tileSizeY);
+		g.fillRect(pos.x(), pos.y(), Settings.tileSizeX, Settings.tileSizeY);
 		//If the player has lost the game, draw a mine on the current tile if it 'hasMine'. 
 		if (game.getState() != State.ONGOING && game.hasMine(p)) {
 			//Set the color of the mines. 
 			g.setColor(Color.black);
 			//Draw an oval that represents a mine. 
-			g.fillOval(pos.x, pos.y, Settings.tileSizeX, Settings.tileSizeY);
+			g.fillOval(pos.x(), pos.y(), Settings.tileSizeX, Settings.tileSizeY);
 		}
 		// Draw the number of mines on each checked tile. 
 		if (!game.hasMine(p)) {
 			if(game.isChecked(p) && game.getSurroundingMines(p) > 0) {
 				stringColor = Color.black; 
 				g.setColor(stringColor); 
-				g.drawString("" + game.getSurroundingMines(p), pos.x + Settings.tileSpacingX, pos.y + Settings.tileSizeY - Settings.tileSpacingY);
+				g.drawString("" + game.getSurroundingMines(p), pos.x() + Settings.tileSpacingX, pos.y() + Settings.tileSizeY - Settings.tileSpacingY);
 			}
 		}
 	}

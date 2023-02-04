@@ -37,12 +37,12 @@ public class Map{
 		}
 		
 		for (int n = 0; n < mineMap.length; n++) {
-			tileMap[mineMap[n].x][mineMap[n].y].hasMine = true;
+			tileMap[mineMap[n].x()][mineMap[n].y()].hasMine = true;
 			
 			// tilesDugUp = 0;
 			//DEBUG actions
 			if (Settings.debug) { 
-				tileMap[mineMap[n].x][mineMap[n].y].isFlagged = true;
+				tileMap[mineMap[n].x()][mineMap[n].y()].isFlagged = true;
 				remainingFlags = 0;
 			}
 		}
@@ -100,7 +100,7 @@ public class Map{
 		int sum = 0;
 		Point[] surroundingTiles = getSurroundingTiles(x, y);
 		for (Point p : surroundingTiles) {
-			if(tileMap[p.x][p.y].hasMine) {
+			if(tileMap[p.x()][p.y()].hasMine) {
 				sum++;
 			}
 		}	
@@ -161,14 +161,14 @@ public class Map{
 		for (int i = 0; i < tileMap.length; i++){
 			Arrays.fill(reached[i], false);
 		}
-		reached[p.x][p.y] = true;
+		reached[p.x()][p.y()] = true;
     
 		while (!frontier.isEmpty()) {
 			Point current = frontier.remove();
 
-			for (Point next : getNext(current.x, current.y)) {
-				if (!reached[next.x][next.y]) {
-					reached[next.x][next.y] = true;
+			for (Point next : getNext(current.x(), current.y())) {
+				if (!reached[next.x()][next.y()]) {
+					reached[next.x()][next.y()] = true;
 					if (getSurroundingMines(next) == 0) {
 						frontier.add(next);
 						if (isFlagged(next)) {
@@ -201,8 +201,8 @@ public class Map{
 	 */
 	Boolean isTileWithinBounds(Point p) {
 		//If the point is within the bounds, then return 'true':
-		return (p.x >= 0 && p.x < tileMap.length &&
-				p.y >= 0 && p.y < tileMap[0].length);
+		return (p.x() >= 0 && p.x() < tileMap.length &&
+				p.y() >= 0 && p.y() < tileMap[0].length);
 	}
 
 	// Checks a tile. 
@@ -221,7 +221,7 @@ public class Map{
 	 */
 	boolean checkTile(Point p1) {
 		if(!isFlagged(p1)) {
-			if(tileMap[p1.x][p1.y].hasMine) {
+			if(tileMap[p1.x()][p1.y()].hasMine) {
 				return true;
 			}
 			else
@@ -229,7 +229,7 @@ public class Map{
 				check(p1);
 				
 				//If the tile has no nearby mines; clear all adjecent tiles with no surrounding mines.
-				if(tileMap[p1.x][p1.y].surroundingMines == 0) {
+				if(tileMap[p1.x()][p1.y()].surroundingMines == 0) {
 
 					//Get surrounding tiles and check each of them. 
 					for (Point p : getAdjecentZeroes(p1)) {
@@ -246,19 +246,19 @@ public class Map{
 	}
 
     public boolean isChecked(Point tilePos) {
-        return tileMap[tilePos.x][tilePos.y].isChecked;
+        return tileMap[tilePos.x()][tilePos.y()].isChecked;
     }
 
     public boolean isFlagged(Point tilePos) {
-        return tileMap[tilePos.x][tilePos.y].isFlagged;
+        return tileMap[tilePos.x()][tilePos.y()].isFlagged;
     }
 
 	public void setChecked(Point tilePos, boolean b) {
-		tileMap[tilePos.x][tilePos.y].isChecked = b;
+		tileMap[tilePos.x()][tilePos.y()].isChecked = b;
 	}
 
     public void setFlagged(Point tilePos, boolean b) {
-		tileMap[tilePos.x][tilePos.y].isFlagged = b;
+		tileMap[tilePos.x()][tilePos.y()].isFlagged = b;
 		remainingFlags += b ? 1 : -1;
     }
 
@@ -276,8 +276,8 @@ public class Map{
 	}
 
 	public void toggleFlagged(Point tilePos) {
-		boolean b = tileMap[tilePos.x][tilePos.y].isFlagged;
-		tileMap[tilePos.x][tilePos.y].isFlagged = !b;
+		boolean b = tileMap[tilePos.x()][tilePos.y()].isFlagged;
+		tileMap[tilePos.x()][tilePos.y()].isFlagged = !b;
 		remainingFlags += b ? -1 : 1;
 	}
 
@@ -286,11 +286,11 @@ public class Map{
 	}
 
     public boolean hasMine(Point p) {
-        return tileMap[p.x][p.y].hasMine;
+        return tileMap[p.x()][p.y()].hasMine;
     }
 
     public int getSurroundingMines(Point p) {
-        return tileMap[p.x][p.y].surroundingMines;
+        return tileMap[p.x()][p.y()].surroundingMines;
     }
 
     public String getRemainingFlags() {
