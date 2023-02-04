@@ -1,8 +1,9 @@
 # MinesweeperAtHome
 
-A Minesweeper clone written in Java. It works, but is missing some features and some parts of the code are rather messy.
+A Minesweeper clone written in Java. It works, but some parts of the code are rather messy.
 
-Use 'D' to dig, 'F' to flag, and 'R' to reset the round.
+Use `D` to dig, `F` to flag.
+`R` to reset the game, `Q` to quit.
 
 Roadmap:
 * The selection of tiles using the mouse is slightly off - fix this.
