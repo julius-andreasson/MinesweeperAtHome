@@ -1,8 +1,16 @@
 package utils;
 
 public class Point {
-    public int x;
-    public int y;
+    private int x;
+    private int y;
+
+    public int x(){
+        return x;
+    }
+
+    public int y(){
+        return y;
+    }
 
     public Point(int x, int y) {
         this.x = x;
