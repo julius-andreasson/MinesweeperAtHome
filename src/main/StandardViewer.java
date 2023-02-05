@@ -48,7 +48,7 @@ public class StandardViewer extends JPanel {
 	
 	public void paintTile(Graphics g, Point p) {
 		Color tileColor, stringColor; 
-		Point pos = Settings.pixelsFromTile(p.x(), p.y());
+		Point pos = Settings.pixelsFromTile(p);
 		
 		if (game.isChecked(p)) {
 			tileColor = Color.lightGray; 

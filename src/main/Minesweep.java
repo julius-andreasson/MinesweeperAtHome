@@ -82,7 +82,7 @@ public class Minesweep {
 			MouseInfo.getPointerInfo().getLocation().y - frame.getLocationOnScreen().getLocation().y
 		);
 
-		Point newPos = Settings.tileFromPixels(mousePos.x(), mousePos.y());
+		Point newPos = Settings.tileFromPixels(mousePos);
 		
 		game.action(action, newPos);
 		viewer.repaint();
