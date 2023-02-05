@@ -2,70 +2,57 @@ package utils;
 
 public class Settings {
     /**
-     * tileSizeX sets the size of tiles in the x-dimension.
+     * Tile size in the x/y-dimensions. Measured in pixels.
      */
 	public static final int tileSizeX = 30;
-
-    /**
-     * tileSizeY sets the size of tiles in the y-dimension.
-     */
     public static final int tileSizeY = 30;
 
     /**
-     * tileCountX sets the number of tiles in the x-dimension.
+     * Number of tiles in the x/y-dimensions.
      */
     public static final int tileCountX = 16;
-
-    /**
-     * tileCountY sets the number of tiles in the y-dimension.
-     */
     public static final int tileCountY = 16;
 
     /**
-     * mineCount sets the number of mines that are to be randomly spread over the map.
+     * Number of mines that are to be randomly spread over the map.
      */
     public static final int mineCount = 40;
 
     /**
-     * tileSpacingX sets the size of the spacing between tiles in the x-dimension.
+     * Spacing between tiles in the x/y-dimensions.
+     * Measured in pixels.
      */
     public static final int tileSpacingX = 3;
-
-    /**
-     * tileSpacingY sets the size of the spacing between tiles in the y-dimension.
-     */
     public static final int tileSpacingY = 3;
 
     /**
-     * borderSizeX sets the size of the spacing between the different areas of the playing area in the x-dimension.
+     * Spacing between the different parts of the playing area in the x/y-dimensions.
+     * Measured in pixels.
      */
     public static final int borderSizeX = 20;
-
-    /**
-     * borderSizeY sets the size of the spacing between the different areas of the playing area in the y-dimension.
-     */
     public static final int borderSizeY = 20;
 
     /**
-     * topUISizeY sets the size of the UI at the top of the window.
+     * Size of the UI at the top of the window.
+     * Measured in pixels.
      */
     public static final int topUISizeY = 50;
 
+    /**
+     * Number of tiles the player needs to clear in order to win.
+     */
     public static final int tilesToWin = tileCountX * tileCountY - mineCount;
 
-    /**
-     * debug
-     */
-    public static boolean debug = false;
+    public static final boolean debug = false;
 
-    public static Point startingPoint = pixelsFromTile(tileCountX / 2, tileCountY / 2);
+    public static final Point startingPoint = pixelsFromTile(tileCountX / 2, tileCountY / 2);
 
     public static Point pixelsFromTile(int x, int y) {
         return new Point(
             // x_pos      
             borderSizeX + x * (tileSizeX + tileSpacingX)
             ,
-            //y_pos
+            // y_pos
             borderSizeY * 2 + topUISizeY + y * (tileSizeY + tileSpacingY)
         );
     }
