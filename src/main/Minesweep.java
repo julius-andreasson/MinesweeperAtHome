@@ -19,7 +19,7 @@ public class Minesweep {
 	private StandardViewer viewer = new StandardViewer(game);
 	private JFrame frame = new JFrame("MinesweeperAtHome");
 
-	public Minesweep() {
+	private Minesweep() {
 		//Set the frame to terminate the program when closed.
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		
