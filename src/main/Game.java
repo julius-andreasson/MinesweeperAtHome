@@ -39,7 +39,7 @@ public class Game {
 				case DIG:
 					if (firstDig) {
 						/* In order to avoid the risk of losing on your first dig,
-						 * this first dig is handled differently.
+						 * the first dig is handled differently.
 						 */
 						newMap(tilePos);
 						firstDig = false;
@@ -54,6 +54,7 @@ public class Game {
 				case FLAG:
 					if(!map.isChecked(tilePos)) {
 						map.toggleFlagged(tilePos);
+						map.checkWin();
 					}
 					break;
 				case RESET:
@@ -78,7 +79,7 @@ public class Game {
 	 * @param tilePos
 	 */
 	private void newMap(Point tilePos) {
-		map = new Map(tilePos, Settings.tileCountX, Settings.tileCountY, Settings.mineCount);
+		map = new TileMap(tilePos, Settings.tileCountX, Settings.tileCountY, Settings.mineCount);
 	}
 
 	public State getState() {
