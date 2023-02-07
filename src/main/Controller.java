@@ -1,25 +1,43 @@
 package main;
 
 import java.awt.Dimension;
-import java.awt.MouseInfo;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import utils.Point;
 import utils.Settings;
 
-public class Minesweep {
+enum Action {
+	NONE,
+	DIG,
+	FLAG,
+	RESET;
+}
 
-	private Game game = new Game();
-	private StandardViewer viewer = new StandardViewer(game);
-	private JFrame frame = new JFrame("MinesweeperAtHome");
+enum Direction {
+	LEFT,
+	RIGHT,
+	UP,
+	DOWN
+}
 
-	private Minesweep() {
+enum State {
+	ONGOING,
+	LOST,
+	WON
+}
+
+public class Controller {
+	private boolean shift; // is the shift key down?
+
+	private Controller() {
+		Board board = new Board(Settings.startingPoint, Settings.tileCountX, Settings.tileCountY, Settings.mineCount);
+		JPanel view = new View(board);
+		JFrame frame = new JFrame("MinesweeperAtHome");
+
 		//Set the frame to terminate the program when closed.
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		
@@ -30,65 +48,64 @@ public class Minesweep {
 				Settings.borderSizeY * 3 + Settings.topUISizeY + Settings.tileCountY * Settings.tileSizeY + (Settings.tileCountY - 1) * Settings.tileSpacingY
 				));
 		frame.pack();
-		frame.add(viewer);
+		frame.add(view);
 		
-		//Add keyListeners
 		frame.addKeyListener(new KeyAdapter() {
 			public void keyReleased(KeyEvent e) {
-				switch (e.getKeyChar()) {
-					case 'd':
+				if (e.getKeyCode()==KeyEvent.VK_SHIFT) {
+					shift = false;
+				}
+			}
+			public void keyPressed(KeyEvent e) {
+				switch (e.getKeyCode()) {
+					case KeyEvent.VK_D:
 						action(Action.DIG);
 						break;
-					case 'f':
+					case KeyEvent.VK_F:
 						action(Action.FLAG);
 						break;
-					case 'r':
+					case KeyEvent.VK_R:
 						action(Action.RESET);
 						break;
-					case 'q':
+					case KeyEvent.VK_Q:
 						System.exit(0);
+						break;
+					case KeyEvent.VK_LEFT:
+						move(Direction.LEFT);
+						break;
+					case KeyEvent.VK_RIGHT:
+						move(Direction.RIGHT);
+						break;
+					case KeyEvent.VK_UP:
+						move(Direction.UP);
+						break;
+					case KeyEvent.VK_DOWN:
+						move(Direction.DOWN);
+						break;
+					case KeyEvent.VK_SHIFT:
+						shift = true;
 						break;
 					default:
 						action(Action.NONE);
 						break;
 				}
 			}
-		});
-		frame.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				switch (e.getButton()) {
-					case MouseEvent.BUTTON1:
-						action(Action.DIG);
-						break;
-					case MouseEvent.BUTTON2:
-						action(Action.FLAG);
-						break;
-					case MouseEvent.BUTTON3:
-						action(Action.RESET);
-						break;
-					default:
-						action(Action.NONE);
-						break;
-				}
+
+			private void move(Direction dir) {
+				board.move(dir, shift ? 3 : 1);
+				view.repaint();
+			}
+
+			private void action(Action action) {
+				board.action(action);
+				view.repaint();
 			}
 		});
 		
 		frame.setVisible(true);
 	}
-	
-	private void action(Action action) {
-		Point mousePos = new Point(
-			MouseInfo.getPointerInfo().getLocation().x - frame.getLocationOnScreen().getLocation().x, 
-			MouseInfo.getPointerInfo().getLocation().y - frame.getLocationOnScreen().getLocation().y
-		);
-
-		Point newPos = Settings.tileFromPixels(mousePos);
-		
-		game.action(action, newPos);
-		viewer.repaint();
-	}
 
 	public static void main(String[] args) {
-		new Minesweep();
+		new Controller();
 	}
 }

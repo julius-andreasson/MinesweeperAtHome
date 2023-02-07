@@ -22,11 +22,16 @@ public class Point {
         this.y += dy;
     }
 
-    public Point translated(int dx, int dy) {
-        return new Point(this.x + dx, this.y + dy);
-    }
-
     public Point copy() {
         return new Point(this.x, this.y);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Point) {
+            Point other = (Point) o;
+            return x == other.x && y == other.y;
+        }
+        return false;
     }
 }

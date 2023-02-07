@@ -45,32 +45,5 @@ public class Settings {
 
     public static final boolean debug = false;
 
-    public static final Point startingPoint = pixelsFromTile(new Point(tileCountX / 2, tileCountY / 2));
-
-    public static Point pixelsFromTile(Point p) {
-        return new Point(
-            // x_pos      
-            borderSizeX + p.x() * (tileSizeX + tileSpacingX)
-            ,
-            // y_pos
-            borderSizeY * 2 + topUISizeY + p.y() * (tileSizeY + tileSpacingY)
-        );
-    }
-
-    public static Point tileFromPixels(Point p) {
-        return new Point(
-            // x_pos
-            (int)(
-                (float)(p.x() - borderSizeX) 
-                / 
-                (float)(tileSizeX + tileSpacingX)
-            ),
-            //y_pos
-            (int)(
-                (float)(p.y() - (borderSizeY * 3 + topUISizeY)) 
-                / 
-                (float)(tileSizeY + tileSpacingY)
-            )
-        );
-    }
+    public static final Point startingPoint = new Point(0, 0);
 }

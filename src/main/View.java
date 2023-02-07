@@ -9,11 +9,11 @@ import javax.swing.JPanel;
 import utils.Point;
 import utils.Settings;
 
-public class StandardViewer extends JPanel {
-	private Game game;
+public class View extends JPanel {
+	private Board board;
 
-	public StandardViewer (Game game) {
-		this.game = game;
+	public View (Board board) {
+		this.board = board;
 	}
 	
 	public void paint(Graphics g) {
@@ -33,29 +33,29 @@ public class StandardViewer extends JPanel {
 		//Draw text; game-over if (end_Loss)
 		g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, Settings.tileSizeY - 3));
 		g.setColor(Color.black);
-		if (game.getState() == State.LOST) {
+		if (board.getState() == State.LOST) {
 			g.drawString("Game over! Press 'R' to restart.", Settings.borderSizeX - 5, Settings.borderSizeY + 20);
-			g.drawString("You cleared " + (game.getTilesCleared()) + " out of " + (Settings.tilesToWin) + " tiles.", Settings.borderSizeX - 5, Settings.borderSizeY + 25 + Settings.tileSizeY);
-		} else if (game.getState() == State.WON){
+			g.drawString("You cleared " + (board.getTilesCleared()) + " out of " + (Settings.tilesToWin) + " tiles.", Settings.borderSizeX - 5, Settings.borderSizeY + 25 + Settings.tileSizeY);
+		} else if (board.getState() == State.WON){
 			g.drawString("You've won! Press 'R' to restart.", Settings.borderSizeX, Settings.borderSizeY + 20);
-			g.drawString("You cleared " + (game.getTilesCleared()) + " out of " + (Settings.tilesToWin) + " tiles.", Settings.borderSizeX - 5, Settings.borderSizeY + 25 + Settings.tileSizeY);
+			g.drawString("You cleared " + (board.getTilesCleared()) + " out of " + (Settings.tilesToWin) + " tiles.", Settings.borderSizeX - 5, Settings.borderSizeY + 25 + Settings.tileSizeY);
 		} else {
 			//TopUI
-			g.drawString("Remaining flags: " + game.getRemainingFlags(), Settings.borderSizeX, Settings.borderSizeY + 20);
-			g.drawString("Tiles cleared: " + game.getTilesCleared(), Settings.borderSizeX, Settings.borderSizeY + 50);
+			g.drawString("Remaining flags: " + board.getRemainingFlags(), Settings.borderSizeX, Settings.borderSizeY + 20);
+			g.drawString("Tiles cleared: " + board.getTilesCleared(), Settings.borderSizeX, Settings.borderSizeY + 50);
 		}
 	}
 	
 	public void paintTile(Graphics g, Point p) {
 		Color tileColor, stringColor; 
-		Point pos = Settings.pixelsFromTile(p);
-		
-		if (game.isChecked(p)) {
+		Point pos = pixelsFromTile(p);
+
+		if (board.isChecked(p)) {
 			tileColor = Color.lightGray; 
 		}
 		else
 		{
-			if(game.isFlagged(p)) {
+			if(board.isFlagged(p)) {
 				tileColor = Color.red; 
 			}
 			else {
@@ -65,19 +65,32 @@ public class StandardViewer extends JPanel {
 		g.setColor(tileColor);
 		g.fillRect(pos.x(), pos.y(), Settings.tileSizeX, Settings.tileSizeY);
 		//If the player has lost the game, draw a mine on the current tile if it 'hasMine'. 
-		if (game.getState() != State.ONGOING && game.hasMine(p)) {
+		if (board.getState() != State.ONGOING && board.hasMine(p)) {
 			//Set the color of the mines. 
 			g.setColor(Color.black);
 			//Draw an oval that represents a mine. 
 			g.fillOval(pos.x(), pos.y(), Settings.tileSizeX, Settings.tileSizeY);
 		}
 		// Draw the number of mines on each checked tile. 
-		if (!game.hasMine(p)) {
-			if(game.isChecked(p) && game.getSurroundingMines(p) > 0) {
+		if (!board.hasMine(p)) {
+			if(board.isChecked(p) && board.getSurroundingMines(p) > 0) {
 				stringColor = Color.black; 
 				g.setColor(stringColor); 
-				g.drawString("" + game.getSurroundingMines(p), pos.x() + Settings.tileSpacingX, pos.y() + Settings.tileSizeY - Settings.tileSpacingY);
+				g.drawString("" + board.getSurroundingMines(p), pos.x() + Settings.tileSpacingX, pos.y() + Settings.tileSizeY - Settings.tileSpacingY);
 			}
 		}
+
+		if (board.isCurrentTile(p)) {
+			g.setColor(Color.green);
+			g.fillRect(pos.x(), pos.y(), Settings.tileSizeX, Settings.tileSizeY);
+		}
 	}
+
+	public static Point pixelsFromTile(Point p) {
+        return new Point(
+            Settings.borderSizeX + p.x() * (Settings.tileSizeX + Settings.tileSpacingX)
+            ,
+            Settings.borderSizeY * 2 + Settings.topUISizeY + p.y() * (Settings.tileSizeY + Settings.tileSpacingY)
+        );
+    }
 }

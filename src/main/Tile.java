@@ -1,5 +1,8 @@
 package main;
 
+/**
+ * Struct for Tile.
+ */
 class Tile {
 	
 	/**
@@ -22,5 +25,4 @@ class Tile {
 	 */
 	int surroundingMines = 0;
 	
-	Tile() {}
 }
