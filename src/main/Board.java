@@ -23,6 +23,97 @@ public class Board {
 		state = State.ONGOING;
 	}
 
+	public State getState() {
+		return state;
+	}
+
+	public String getTilesCleared() {
+		return Integer.toString(tilesCleared);
+	}
+
+    public boolean hasMine(Point p) {
+        return map.hasMine(p);
+    }
+
+    public int getSurroundingMines(Point p) {
+        return map.surroundingMines(p);
+    }
+
+    public String getRemainingFlags() {
+        return Integer.toString(remainingFlags);
+    }
+
+	public boolean isChecked(Point p) {
+        return map.isChecked(p);
+    }
+
+    public boolean isFlagged(Point p) {
+        return map.isFlagged(p);
+    }
+
+	public void action(Action action) {
+		if (map.isTileWithinBounds(selectedTile)) {
+			//This prevents any action but reset to go through if the game has been lost. 
+			if (state != State.ONGOING && action != Action.RESET) {
+				action = Action.NONE;
+			}
+
+			switch (action) {
+				case DIG:
+					if (firstDig) {
+						/* In order to avoid the risk of losing on your first dig,
+						 * the first dig is handled differently.
+						 */
+						reset();
+						firstDig = false;
+					}
+					if (checkTile(selectedTile)) {
+						lost();
+					} else {
+						checkWin();
+					}
+					break;
+				case FLAG:
+					flag(selectedTile);
+					break;
+				case RESET:
+					//On the next line, the Map constructor resets 'minesRemaning'.
+					reset();
+					state = State.ONGOING;
+					firstDig = true;
+					// The value 'minesRemaning' is not reset at this point in this method, since it's already reset in the Map constructor that is called.
+					break;
+				default:
+					break;
+			}
+		}
+	}
+
+	public void move(Direction dir, int steps) {
+		int x=0, y=0;
+		switch (dir) {
+			case LEFT:
+				x--;
+				break;
+			case RIGHT:
+				x++;
+				break;
+			case UP:
+				y--;
+				break;
+			case DOWN:
+				y++;
+				break;
+			default:
+				break;
+		}
+		selectedTile.translate(x*steps, y*steps);
+    }
+
+	public boolean isCurrentTile(Point p) {
+		return p.equals(selectedTile);
+	}
+
 	private void lost() {
 		state = State.LOST;
 	}
@@ -36,10 +127,6 @@ public class Board {
 			toggleFlagged(tilePos);
 			checkWin();
 		}
-	}
-
-	public State getState() {
-		return state;
 	}
 
 	private Point[] getNext(int x, int y) {
@@ -108,21 +195,12 @@ public class Board {
 		return res.toArray(new Point[0]);
 	}
 
-	// Checks a tile. 
-	private void check(Point p) {
-		//Check if it's already checked - if it is, don't bother redoing it - this to avoid counting the point twice.
-		if (!isChecked(p)) {
-			tilesCleared++;
-			setChecked(p, true);
-		}
-	}
-
 	/**
 	 * When a tile is turned _Checked_, it's either a mine (in which case you lose) or not (in which case a chain reaction might be appropriate).
 	 * @param x
 	 * @param y
 	 */
-	public boolean checkTile(Point p1) {
+	private boolean checkTile(Point p1) {
 		if(!isFlagged(p1)) {
 			if(map.hasMine(p1)) {				
 				return true;
@@ -148,10 +226,19 @@ public class Board {
 		return false;
 	}
 
+	// Checks a tile.
+	private void check(Point p) {
+		//Check if it's already checked - if it is, don't bother redoing it - this to avoid counting the point twice.
+		if (!isChecked(p)) {
+			tilesCleared++;
+			setChecked(p, true);
+		}
+	}
+
 	/**
 	 * This is a separate method since it has to be checked both when a tile is cleared and when a flag is placed.
 	 */
-	public void checkWin() {
+	private void checkWin() {
 		//If all the flags are placed and all the empty tiles are dug up, the player wins.
 		if (
 			tilesCleared == Settings.tilesToWin &&
@@ -161,109 +248,22 @@ public class Board {
 		}
 	}
 
-	public void toggleFlagged(Point p) {
+	private void toggleFlagged(Point p) {
 		boolean b = map.isFlagged(p);
 		map.setFlagged(p, !b);
 		remainingFlags += b ? -1 : 1;
 	}
 
-	public String getTilesCleared() {
-		return Integer.toString(tilesCleared);
-	}
-
-    public boolean hasMine(Point p) {
-        return map.hasMine(p);
-    }
-
-    public int getSurroundingMines(Point p) {
-        return map.surroundingMines(p);
-    }
-
-    public String getRemainingFlags() {
-        return Integer.toString(remainingFlags);
-    }
-
-	public boolean isChecked(Point p) {
-        return map.isChecked(p);
-    }
-
-    public boolean isFlagged(Point p) {
-        return map.isFlagged(p);
-    }
-
-	public void setChecked(Point p, boolean b) {
+	private void setChecked(Point p, boolean b) {
 		map.setChecked(p, b);
 	}
 
-    public void setFlagged(Point tilePos, boolean b) {
+    private void setFlagged(Point tilePos, boolean b) {
 		map.setFlagged(tilePos, b);
 		remainingFlags += b ? 1 : -1;
     }
 
-	public void action(Action action) {
-		if (map.isTileWithinBounds(selectedTile)) {
-			//This prevents any action but reset to go through if the game has been lost. 
-			if (state != State.ONGOING && action != Action.RESET) {
-				action = Action.NONE;
-			}
-
-			switch (action) {
-				case DIG:
-					if (firstDig) {
-						/* In order to avoid the risk of losing on your first dig,
-						 * the first dig is handled differently.
-						 */
-						reset();
-						firstDig = false;
-					}
-					if (checkTile(selectedTile)) {
-						lost();
-					} else {
-						checkWin();
-					}
-					break;
-				case FLAG:
-					flag(selectedTile);
-					break;
-				case RESET:
-					//On the next line, the Map constructor resets 'minesRemaning'.
-					reset();
-					state = State.ONGOING;
-					firstDig = true;
-					// The value 'minesRemaning' is not reset at this point in this method, since it's already reset in the Map constructor that is called.
-					break;
-				default:
-					break;
-			}
-		}
-	}
-
     private void reset() {
 		map = map.reset(selectedTile);
-	}
-
-	public void move(Direction dir, int steps) {
-		int x=0, y=0;
-		switch (dir) {
-			case LEFT:
-				x--;
-				break;
-			case RIGHT:
-				x++;
-				break;
-			case UP:
-				y--;
-				break;
-			case DOWN:
-				y++;
-				break;
-			default:
-				break;
-		}
-		selectedTile.translate(x*steps, y*steps);
-    }
-
-	public boolean isCurrentTile(Point p) {
-		return p.equals(selectedTile);
 	}
 }
