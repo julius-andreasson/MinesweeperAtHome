@@ -32,10 +32,12 @@ enum State {
 
 public class Controller {
 	private boolean shift; // is the shift key down?
+	private Board board;
+	private JPanel view;
 
-	private Controller() {
-		Board board = new Board(Settings.startingPoint, Settings.tileCountX, Settings.tileCountY, Settings.mineCount);
-		JPanel view = new View(board);
+	public Controller() {
+		board = new Board(Settings.startingPoint, Settings.tileCountX, Settings.tileCountY, Settings.mineCount);
+		view = new View(board);
 		JFrame frame = new JFrame("MinesweeperAtHome");
 
 		//Set the frame to terminate the program when closed.
@@ -50,7 +52,13 @@ public class Controller {
 		frame.pack();
 		frame.add(view);
 		
-		frame.addKeyListener(new KeyAdapter() {
+		frame.addKeyListener(createKeyAdapter());
+		
+		frame.setVisible(true);
+	}
+
+	KeyAdapter createKeyAdapter() {
+		return new KeyAdapter() {
 			public void keyReleased(KeyEvent e) {
 				if (e.getKeyCode()==KeyEvent.VK_SHIFT) {
 					shift = false;
@@ -100,12 +108,6 @@ public class Controller {
 				board.action(action);
 				view.repaint();
 			}
-		});
-		
-		frame.setVisible(true);
-	}
-
-	public static void main(String[] args) {
-		new Controller();
+		};
 	}
 }
