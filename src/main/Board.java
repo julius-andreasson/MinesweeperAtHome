@@ -68,7 +68,7 @@ public class Board {
 						firstDig = false;
 					}
 					if (checkTile(selectedTile)) {
-						lost();
+						state = State.LOST;
 					} else {
 						checkWin();
 					}
@@ -108,18 +108,18 @@ public class Board {
 				break;
 		}
 		selectedTile.translate(x*steps, y*steps);
+		selectedTile = clipToBounds(selectedTile);
     }
+
+	private Point clipToBounds(Point p) {
+		Point res = p.copy();
+		res = new Point(res.x() >= 0 ? res.x() : 0, res.y() >= 0 ? res.y() : 0);
+		res = new Point(res.x() <= map.x() ? res.x() : map.x(), res.y() <= map.y() ? res.y() : map.y());
+		return res;
+	}
 
 	public boolean isCurrentTile(Point p) {
 		return p.equals(selectedTile);
-	}
-
-	private void lost() {
-		state = State.LOST;
-	}
-
-	private void won() {
-		state = State.WON;
 	}
 
 	private void flag(Point tilePos) {
@@ -244,7 +244,7 @@ public class Board {
 			tilesCleared == Settings.tilesToWin &&
 			remainingFlags == 0
 		) {
-			won();
+			state = State.WON;
 		}
 	}
 
