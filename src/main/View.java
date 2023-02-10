@@ -86,7 +86,7 @@ public class View extends JPanel {
 		}
 	}
 
-	public static Point pixelsFromTile(Point p) {
+	private static Point pixelsFromTile(Point p) {
         return new Point(
             Settings.borderSizeX + p.x() * (Settings.tileSizeX + Settings.tileSpacingX)
             ,

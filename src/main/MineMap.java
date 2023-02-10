@@ -87,7 +87,7 @@ public class MineMap {
 	 * @param max
 	 * @return
 	 */
-	public static int randomNumber(int min, int max) {
+	private static int randomNumber(int min, int max) {
 		return (int)Math.round((Math.random() * (max - min) + min));
 	}
 
