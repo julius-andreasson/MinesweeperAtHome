@@ -12,7 +12,7 @@ Roadmap:
     * Introduce interfaces between classes. (Dependency Inversion Principle)
 * Clean up the code.
 * Movement:
-    * Ctrl-key to snap to nearest mine/wall in a direction.
+    * Ctrl-key to snap to nearest mine/wall in a direction. (Wall done, mine not)
 * Make the UI nice.
 * Map generation that never creates situations where the player has to rely on chance.
 

@@ -114,7 +114,7 @@ public class Board {
 	private Point clipToBounds(Point p) {
 		Point res = p.copy();
 		res = new Point(res.x() >= 0 ? res.x() : 0, res.y() >= 0 ? res.y() : 0);
-		res = new Point(res.x() <= map.x() ? res.x() : map.x(), res.y() <= map.y() ? res.y() : map.y());
+		res = new Point(res.x() < map.x() ? res.x() : map.x()-1, res.y() < map.y() ? res.y() : map.y()-1);
 		return res;
 	}
 

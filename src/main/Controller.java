@@ -31,7 +31,7 @@ enum State {
 }
 
 public class Controller {
-	private boolean shift; // is the shift key down?
+	private boolean shift, ctrl; // is the shift/ctrl key down?
 	private Board board;
 	private JPanel view;
 
@@ -60,8 +60,14 @@ public class Controller {
 	KeyAdapter createKeyAdapter() {
 		return new KeyAdapter() {
 			public void keyReleased(KeyEvent e) {
-				if (e.getKeyCode()==KeyEvent.VK_SHIFT) {
-					shift = false;
+				switch (e.getKeyCode()) {
+					case KeyEvent.VK_SHIFT:
+						shift = false;
+						break;
+					case KeyEvent.VK_CONTROL:
+						ctrl = false;
+					default:
+						break;
 				}
 			}
 			public void keyPressed(KeyEvent e) {
@@ -93,6 +99,8 @@ public class Controller {
 					case KeyEvent.VK_SHIFT:
 						shift = true;
 						break;
+					case KeyEvent.VK_CONTROL:
+						ctrl = true;
 					default:
 						action(Action.NONE);
 						break;
@@ -100,7 +108,7 @@ public class Controller {
 			}
 
 			private void move(Direction dir) {
-				board.move(dir, shift ? 3 : 1);
+				board.move(dir, ctrl ? 100 : shift ? 3 : 1);
 				view.repaint();
 			}
 
