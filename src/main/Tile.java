@@ -6,17 +6,17 @@ package main;
 class Tile {
 	
 	/**
-	 * Indicates whether or not the tile has been checked for mines.
+	 * Indicates whether the tile has been checked for mines.
 	 */
 	boolean isChecked = false;
 	
 	/**
-	 * Indicates whether or not the tile is a mine or not.
+	 * Indicates whether the tile is a mine or not.
 	 */
 	boolean hasMine = false;
 	
 	/**
-	 * Indicates whether or not the tile has been flagged.
+	 * Indicates whether the tile has been flagged.
 	 */
 	boolean isFlagged = false;
 	

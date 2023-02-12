@@ -10,21 +10,19 @@ public class MineMap {
     private Tile[][] tileMap;
 	private int xSize;
 	private int ySize;
-    private int mineCount;
     private Point startingPoint;
 
-    public MineMap(int xSize, int ySize, int mineCount, Point startingPoint) {
+    public MineMap(int xSize, int ySize, Point startingPoint) {
 		this.xSize = xSize;
         this.ySize = ySize;
-        this.mineCount = mineCount;
         this.startingPoint = startingPoint;
 
         //Initialize TileMap
 		tileMap = new Tile[xSize][ySize];
 		
 		//Generate a set of random point on the map.
-		Point[] mineMap = new Point[mineCount];
-		mineMap = generateMineMap(startingPoint, xSize, ySize, mineCount);
+		Point[] mineMap = new Point[Settings.mineCount];
+		mineMap = generateMineMap(startingPoint, xSize, ySize, Settings.mineCount);
 		
 		//Populate TileMap with Tiles
 		for (int x = 0; x < xSize; x++) {
@@ -52,7 +50,7 @@ public class MineMap {
     
     private Point[] generateMineMap(Point startPoint, int width, int height, int mineCount) {
 		//Generate an ArrayList with points representing each point in the TileMap.
-		ArrayList<Point> pointSelectionList = new ArrayList<Point>();
+		ArrayList<Point> pointSelectionList = new ArrayList<>();
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				pointSelectionList.add(new Point(x, y));
@@ -166,6 +164,6 @@ public class MineMap {
     }
 
     public MineMap reset(Point selectedTile) {
-        return new MineMap(xSize, ySize, mineCount, startingPoint);
+        return new MineMap(xSize, ySize, startingPoint);
     }
 }

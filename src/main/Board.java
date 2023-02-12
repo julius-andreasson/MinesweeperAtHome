@@ -12,13 +12,13 @@ public class Board {
 	private State state;
 	private boolean firstDig = true;
 	private MineMap map;
-	private int remainingFlags;
+	private int remainingFlags = Settings.mineCount;
 	private int tilesCleared;
 	private Point selectedTile;
 	
-	public Board(Point startingPoint, int xSize, int ySize, int mineCount) {
+	public Board(Point startingPoint, int xSize, int ySize) {
 		selectedTile = startingPoint;
-		map = new MineMap(xSize, ySize, mineCount, startingPoint);
+		map = new MineMap(xSize, ySize, startingPoint);
 
 		state = State.ONGOING;
 	}
@@ -113,8 +113,8 @@ public class Board {
 
 	private Point clipToBounds(Point p) {
 		Point res = p.copy();
-		res = new Point(res.x() >= 0 ? res.x() : 0, res.y() >= 0 ? res.y() : 0);
-		res = new Point(res.x() < map.x() ? res.x() : map.x()-1, res.y() < map.y() ? res.y() : map.y()-1);
+		res = new Point(Math.max(res.x(), 0), Math.max(res.y(), 0));
+		res = new Point(Math.min(res.x(), map.x() - 1), Math.min(res.y(), map.y() - 1));
 		return res;
 	}
 
@@ -131,7 +131,7 @@ public class Board {
 
 	private Point[] getNext(int x, int y) {
 		//Generate an ArrayList with points representing each point in the TileMap.
-		ArrayList<Point> surroundingTilesList = new ArrayList<Point>();
+		ArrayList<Point> surroundingTilesList = new ArrayList<>();
 		/*
 		* For each tile next to the tile in question;
 		* If it exists, add it to the list of 'surroundingTilesList'
@@ -155,7 +155,7 @@ public class Board {
 	// A flood-fill function that find an interconnected area
 	private Point[] getAdjecentZeroes(Point p) {
     // Initialize a queue. Add the starting point to it.
-		Queue<Point> frontier = new LinkedList<Point>();
+		Queue<Point> frontier = new LinkedList<>();
 		frontier.add(p);
 
 		// Create an array and fill it with false. 
@@ -182,7 +182,7 @@ public class Board {
 		}
 
 		// Generate an empty ArrayList.
-		ArrayList<Point> res = new ArrayList<Point>();
+		ArrayList<Point> res = new ArrayList<>();
 		// Iterate through "reached" and add all the reached points to res.
 		for (int i = 0; i < reached.length; i++){
 			for (int j = 0; j < reached[0].length; j++) {
@@ -197,25 +197,19 @@ public class Board {
 
 	/**
 	 * When a tile is turned _Checked_, it's either a mine (in which case you lose) or not (in which case a chain reaction might be appropriate).
-	 * @param x
-	 * @param y
+	 * @param p1
 	 */
 	private boolean checkTile(Point p1) {
 		if(!isFlagged(p1)) {
-			if(map.hasMine(p1)) {				
+			if(map.hasMine(p1)) {
 				return true;
-			}
-			else
-			{
+			} else {
 				check(p1);
-				
 				//If the tile has no nearby mines; clear all adjecent tiles with no surrounding mines.
 				if(map.surroundingMines(p1) == 0) {
-
 					//Get surrounding tiles and check each of them. 
 					for (Point p : getAdjecentZeroes(p1)) {
 						check(p);
-						
 						if (isFlagged(p)) {
 							setFlagged(p, false);
 						}
@@ -249,9 +243,8 @@ public class Board {
 	}
 
 	private void toggleFlagged(Point p) {
-		boolean b = map.isFlagged(p);
-		map.setFlagged(p, !b);
-		remainingFlags += b ? -1 : 1;
+		var b = map.isFlagged(p);
+		setFlagged(p, !b);
 	}
 
 	private void setChecked(Point p, boolean b) {
@@ -260,10 +253,12 @@ public class Board {
 
     private void setFlagged(Point tilePos, boolean b) {
 		map.setFlagged(tilePos, b);
-		remainingFlags += b ? 1 : -1;
+		remainingFlags += b ? -1 : 1;
     }
 
     private void reset() {
+		tilesCleared = 0;//Settings.tilesToWin;
+		remainingFlags = Settings.mineCount;
 		map = map.reset(selectedTile);
 	}
 }
