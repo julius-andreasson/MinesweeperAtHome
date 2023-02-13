@@ -7,22 +7,20 @@ import utils.Point;
 import utils.Settings;
 
 public class MineMap {
-    private Tile[][] tileMap;
-	private int xSize;
-	private int ySize;
-    private Point startingPoint;
+    private final Tile[][] tileMap;
+	private final int xSize;
+	private final int ySize;
 
     public MineMap(int xSize, int ySize, Point startingPoint) {
 		this.xSize = xSize;
         this.ySize = ySize;
-        this.startingPoint = startingPoint;
 
         //Initialize TileMap
 		tileMap = new Tile[xSize][ySize];
 		
 		//Generate a set of random point on the map.
-		Point[] mineMap = new Point[Settings.mineCount];
-		mineMap = generateMineMap(startingPoint, xSize, ySize, Settings.mineCount);
+		Point[] mineMap;
+		mineMap = generateMineMap(startingPoint, xSize, ySize);
 		
 		//Populate TileMap with Tiles
 		for (int x = 0; x < xSize; x++) {
@@ -30,13 +28,13 @@ public class MineMap {
 				tileMap[x][y] = new Tile();
 			}
 		}
-		
-		for (int n = 0; n < mineMap.length; n++) {
-			tileMap[mineMap[n].x()][mineMap[n].y()].hasMine = true;
-			
+
+		for (Point point : mineMap) {
+			tileMap[point.x()][point.y()].hasMine = true;
+
 			//DEBUG actions
-			if (Settings.debug) { 
-				tileMap[mineMap[n].x()][mineMap[n].y()].isFlagged = true;
+			if (Settings.debug) {
+				tileMap[point.x()][point.y()].isFlagged = true;
 				//remainingFlags = 0;
 			}
 		}
@@ -48,7 +46,7 @@ public class MineMap {
 		}
 	}
     
-    private Point[] generateMineMap(Point startPoint, int width, int height, int mineCount) {
+    private Point[] generateMineMap(Point startPoint, int width, int height) {
 		//Generate an ArrayList with points representing each point in the TileMap.
 		ArrayList<Point> pointSelectionList = new ArrayList<>();
 		for (int x = 0; x < width; x++) {
@@ -61,14 +59,14 @@ public class MineMap {
 		pointSelectionList.remove(startPoint);
 		
 		//Generate array of Points to return
-		Point[] returnArray = new Point[mineCount];
+		Point[] returnArray = new Point[Settings.mineCount];
 		
 		/*
 		 * For each mine to be added, select a random point within the 'pointSelectionList' and add it to the 'returnArray'. 
 		 */
-		for (int n = 0; n < mineCount; n++) {
+		for (int n = 0; n < Settings.mineCount; n++) {
 			//Generate a random number within the bounds of the 'pointSelectionList'. -1 to keep within bounds.
-			int curr = randomNumber(0, pointSelectionList.size() - 1);
+			int curr = randomNumber(pointSelectionList.size() - 1);
 			//Pick the point at this number.
 			returnArray[n] = pointSelectionList.get(curr).copy();
 			//Each time a point is selected, remove it from the 'pointSelectionList' to avoid doubles.
@@ -81,12 +79,11 @@ public class MineMap {
 
 	/**
 	 * Returns a random integer min <= int <= max.
-	 * @param min
 	 * @param max
 	 * @return
 	 */
-	private static int randomNumber(int min, int max) {
-		return (int)Math.round((Math.random() * (max - min) + min));
+	private static int randomNumber(int max) {
+		return (int)Math.round(Math.random() * max);
 	}
 
     	/**
@@ -104,7 +101,7 @@ public class MineMap {
 
     private Point[] getSurroundingTiles(int x, int y) {
 		//Generate an ArrayList with points representing points in the TileMap.
-		ArrayList<Point> surroundingTilesList = new ArrayList<Point>();
+		ArrayList<Point> surroundingTilesList = new ArrayList<>();
 		/*
 		 * For each tile in a 9-tile square centered on the current tile:
 		 * If it exists, and is not the 'current tile',
@@ -164,6 +161,6 @@ public class MineMap {
     }
 
     public MineMap reset(Point selectedTile) {
-        return new MineMap(xSize, ySize, startingPoint);
+        return new MineMap(xSize, ySize, selectedTile);
     }
 }

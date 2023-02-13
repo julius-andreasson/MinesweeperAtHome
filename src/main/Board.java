@@ -59,7 +59,7 @@ public class Board {
 			}
 
 			switch (action) {
-				case DIG:
+				case DIG -> {
 					if (firstDig) {
 						/* In order to avoid the risk of losing on your first dig,
 						 * the first dig is handled differently.
@@ -72,19 +72,17 @@ public class Board {
 					} else {
 						checkWin();
 					}
-					break;
-				case FLAG:
-					flag(selectedTile);
-					break;
-				case RESET:
-					//On the next line, the Map constructor resets 'minesRemaning'.
+				}
+				case FLAG -> flag(selectedTile);
+				case RESET -> {
+					//On the next line, the Map constructor resets 'minesRemaining'.
 					reset();
 					state = State.ONGOING;
 					firstDig = true;
-					// The value 'minesRemaning' is not reset at this point in this method, since it's already reset in the Map constructor that is called.
-					break;
-				default:
-					break;
+				}
+				// The value 'minesRemaining' is not reset at this point in this method, since it's already reset in the Map constructor that is called.
+				default -> {
+				}
 			}
 		}
 	}
@@ -92,20 +90,12 @@ public class Board {
 	public void move(Direction dir, int steps) {
 		int x=0, y=0;
 		switch (dir) {
-			case LEFT:
-				x--;
-				break;
-			case RIGHT:
-				x++;
-				break;
-			case UP:
-				y--;
-				break;
-			case DOWN:
-				y++;
-				break;
-			default:
-				break;
+			case LEFT -> x--;
+			case RIGHT -> x++;
+			case UP -> y--;
+			case DOWN -> y++;
+			default -> {
+			}
 		}
 		selectedTile.translate(x*steps, y*steps);
 		selectedTile = clipToBounds(selectedTile);
@@ -153,7 +143,7 @@ public class Board {
 	}
 
 	// A flood-fill function that find an interconnected area
-	private Point[] getAdjecentZeroes(Point p) {
+	private Point[] getAdjacentZeroes(Point p) {
     // Initialize a queue. Add the starting point to it.
 		Queue<Point> frontier = new LinkedList<>();
 		frontier.add(p);
@@ -205,10 +195,10 @@ public class Board {
 				return true;
 			} else {
 				check(p1);
-				//If the tile has no nearby mines; clear all adjecent tiles with no surrounding mines.
+				//If the tile has no nearby mines; clear all adjacent tiles with no surrounding mines.
 				if(map.surroundingMines(p1) == 0) {
 					//Get surrounding tiles and check each of them. 
-					for (Point p : getAdjecentZeroes(p1)) {
+					for (Point p : getAdjacentZeroes(p1)) {
 						check(p);
 						if (isFlagged(p)) {
 							setFlagged(p, false);
@@ -225,7 +215,7 @@ public class Board {
 		//Check if it's already checked - if it is, don't bother redoing it - this to avoid counting the point twice.
 		if (!isChecked(p)) {
 			tilesCleared++;
-			setChecked(p, true);
+			map.setChecked(p, true);
 		}
 	}
 
@@ -247,17 +237,13 @@ public class Board {
 		setFlagged(p, !b);
 	}
 
-	private void setChecked(Point p, boolean b) {
-		map.setChecked(p, b);
-	}
-
     private void setFlagged(Point tilePos, boolean b) {
 		map.setFlagged(tilePos, b);
 		remainingFlags += b ? -1 : 1;
     }
 
     private void reset() {
-		tilesCleared = 0;//Settings.tilesToWin;
+		tilesCleared = 0;
 		remainingFlags = Settings.mineCount;
 		map = map.reset(selectedTile);
 	}

@@ -14,7 +14,7 @@ enum Action {
 	NONE,
 	DIG,
 	FLAG,
-	RESET;
+	RESET
 }
 
 enum Direction {
@@ -32,8 +32,8 @@ enum State {
 
 public class Controller {
 	private boolean shift; // is the shift key down?
-	private Board board;
-	private JPanel view;
+	private final Board board;
+	private final JPanel view;
 
 	public Controller() {
 		board = new Board(Settings.startingPoint, Settings.tileCountX, Settings.tileCountY);
@@ -66,36 +66,16 @@ public class Controller {
 			}
 			public void keyPressed(KeyEvent e) {
 				switch (e.getKeyCode()) {
-					case KeyEvent.VK_D:
-						action(Action.DIG);
-						break;
-					case KeyEvent.VK_F:
-						action(Action.FLAG);
-						break;
-					case KeyEvent.VK_R:
-						action(Action.RESET);
-						break;
-					case KeyEvent.VK_Q:
-						System.exit(0);
-						break;
-					case KeyEvent.VK_LEFT:
-						move(Direction.LEFT);
-						break;
-					case KeyEvent.VK_RIGHT:
-						move(Direction.RIGHT);
-						break;
-					case KeyEvent.VK_UP:
-						move(Direction.UP);
-						break;
-					case KeyEvent.VK_DOWN:
-						move(Direction.DOWN);
-						break;
-					case KeyEvent.VK_SHIFT:
-						shift = true;
-						break;
-					default:
-						action(Action.NONE);
-						break;
+					case KeyEvent.VK_D -> action(Action.DIG);
+					case KeyEvent.VK_F -> action(Action.FLAG);
+					case KeyEvent.VK_R -> action(Action.RESET);
+					case KeyEvent.VK_Q -> System.exit(0);
+					case KeyEvent.VK_LEFT -> move(Direction.LEFT);
+					case KeyEvent.VK_RIGHT -> move(Direction.RIGHT);
+					case KeyEvent.VK_UP -> move(Direction.UP);
+					case KeyEvent.VK_DOWN -> move(Direction.DOWN);
+					case KeyEvent.VK_SHIFT -> shift = true;
+					default -> action(Action.NONE);
 				}
 			}
 

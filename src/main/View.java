@@ -10,7 +10,7 @@ import utils.Point;
 import utils.Settings;
 
 public class View extends JPanel {
-	private Board board;
+	private final Board board;
 
 	public View (Board board) {
 		this.board = board;
