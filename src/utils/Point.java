@@ -28,8 +28,7 @@ public class Point {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof Point) {
-            Point other = (Point) o;
+        if (o instanceof Point other) {
             return x == other.x && y == other.y;
         }
         return false;
