@@ -1,9 +1,7 @@
 package main;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import utils.Point;
 import utils.Settings;
@@ -104,7 +102,7 @@ public class Board {
 	private Point clipToBounds(Point p) {
 		Point res = p.copy();
 		res = new Point(Math.max(res.x(), 0), Math.max(res.y(), 0));
-		res = new Point(Math.min(res.x(), map.x() - 1), Math.min(res.y(), map.y() - 1));
+		res = new Point(Math.min(res.x(), map.width() - 1), Math.min(res.y(), map.height() - 1));
 		return res;
 	}
 
@@ -119,48 +117,33 @@ public class Board {
 		}
 	}
 
-	private Point[] getNext(int x, int y) {
-		//Generate an ArrayList with points representing each point in the TileMap.
-		ArrayList<Point> surroundingTilesList = new ArrayList<>();
+	private Set<Point> getNext(Point p) {
 		/*
 		* For each tile next to the tile in question;
-		* If it exists, add it to the list of 'surroundingTilesList'
+		* If it exists (is within bounds), it should be returned.
 		*/
-		Point[] points = {
-			new Point(x - 1, y),
-			new Point(x + 1, y),
-			new Point(x, y - 1),
-			new Point(x, y + 1)
-		};
-		for (Point p : points) {
-			if (map.isTileWithinBounds(p)) {
-				surroundingTilesList.add(p);
-			}
-		}
-
-		//Convert the ArrayList to an array and return the finished product.
-		return surroundingTilesList.toArray(new Point[0]);
+		return Point
+				.getSurroundingCross(p)
+				.stream()
+				.filter(map::isTileWithinBounds)
+				.collect(Collectors.toSet());
 	}
 
 	// A flood-fill function that find an interconnected area
-	private Point[] getAdjacentZeroes(Point p) {
-    // Initialize a queue. Add the starting point to it.
+	private Collection<Point> getAdjacentZeroes(Point p) {
+    	// Initialize a queue. Add the starting point to it.
 		Queue<Point> frontier = new LinkedList<>();
 		frontier.add(p);
 
-		// Create an array and fill it with false. 
-		Boolean[][] reached = new Boolean[map.x()][map.y()];
-		for (int i = 0; i < map.x(); i++){
-			Arrays.fill(reached[i], false);
-		}
-		reached[p.x()][p.y()] = true;
+		var reached = new HashSet<Point>();
+		reached.add(p);
     
 		while (!frontier.isEmpty()) {
 			Point current = frontier.remove();
 
-			for (Point next : getNext(current.x(), current.y())) {
-				if (!reached[next.x()][next.y()]) {
-					reached[next.x()][next.y()] = true;
+			for (Point next : getNext(current)) {
+				if (!reached.contains(next)) {
+					reached.add(next);
 					if (getSurroundingMines(next) == 0) {
 						frontier.add(next);
 						if (isFlagged(next)) {
@@ -170,38 +153,25 @@ public class Board {
 				}
 			}
 		}
-
-		// Generate an empty ArrayList.
-		ArrayList<Point> res = new ArrayList<>();
-		// Iterate through "reached" and add all the reached points to res.
-		for (int i = 0; i < reached.length; i++){
-			for (int j = 0; j < reached[0].length; j++) {
-				if (reached[i][j]) {
-					res.add(new Point(i, j));
-				}
-			}
-		}
-		//Convert the ArrayList to an array and return it.
-		return res.toArray(new Point[0]);
+		return reached;
 	}
 
 	/**
 	 * When a tile is turned _Checked_, it's either a mine (in which case you lose) or not (in which case a chain reaction might be appropriate).
-	 * @param p1
 	 */
-	private boolean checkTile(Point p1) {
-		if(!isFlagged(p1)) {
-			if(map.hasMine(p1)) {
+	private boolean checkTile(Point p) {
+		if(!isFlagged(p)) {
+			if(map.hasMine(p)) {
 				return true;
 			} else {
-				check(p1);
+				check(p);
 				//If the tile has no nearby mines; clear all adjacent tiles with no surrounding mines.
-				if(map.surroundingMines(p1) == 0) {
-					//Get surrounding tiles and check each of them. 
-					for (Point p : getAdjacentZeroes(p1)) {
-						check(p);
-						if (isFlagged(p)) {
-							setFlagged(p, false);
+				if(map.surroundingMines(p) == 0) {
+					//Get surrounding tiles and check each of them.
+					for (Point adjacent : getAdjacentZeroes(p)) {
+						check(adjacent);
+						if (isFlagged(adjacent)) {
+							setFlagged(adjacent, false);
 						}
 					}
 				}
@@ -222,7 +192,7 @@ public class Board {
 	/**
 	 * This is a separate method since it has to be checked both when a tile is cleared and when a flag is placed.
 	 */
-	private void checkWin() {
+	public void checkWin() {
 		//If all the flags are placed and all the empty tiles are dug up, the player wins.
 		if (
 			tilesCleared == Settings.tilesToWin &&

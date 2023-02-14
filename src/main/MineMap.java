@@ -1,7 +1,6 @@
 package main;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 import utils.Point;
 import utils.Settings;
@@ -17,11 +16,7 @@ public class MineMap {
 
         //Initialize TileMap
 		tileMap = new Tile[xSize][ySize];
-		
-		//Generate a set of random point on the map.
-		Point[] mineMap;
-		mineMap = generateMineMap(startingPoint, xSize, ySize);
-		
+
 		//Populate TileMap with Tiles
 		for (int x = 0; x < xSize; x++) {
 			for (int y = 0; y < ySize; y++) {
@@ -29,24 +24,21 @@ public class MineMap {
 			}
 		}
 
-		for (Point point : mineMap) {
-			tileMap[point.x()][point.y()].hasMine = true;
+		//Generate a set of random point on the map.
+		var mineMap = generateMineMap(startingPoint, xSize, ySize);
 
-			//DEBUG actions
-			if (Settings.debug) {
-				tileMap[point.x()][point.y()].isFlagged = true;
-				//remainingFlags = 0;
-			}
+		for (var p : mineMap) {
+			tileMap[p.x()][p.y()].hasMine = true;
 		}
-		
+
 		for (int x = 0; x < xSize; x++) {
 			for (int y = 0; y < ySize; y++) {
-				tileMap[x][y].surroundingMines = calcSurroundingMines(x, y);
+				tileMap[x][y].surroundingMines = calcSurroundingMines(new Point(x, y));
 			}
 		}
 	}
-    
-    private Point[] generateMineMap(Point startPoint, int width, int height) {
+
+    private List<Point> generateMineMap(Point startPoint, int width, int height) {
 		//Generate an ArrayList with points representing each point in the TileMap.
 		ArrayList<Point> pointSelectionList = new ArrayList<>();
 		for (int x = 0; x < width; x++) {
@@ -55,68 +47,44 @@ public class MineMap {
 			}
 		}
 
-		// Remove the first point clicked by the player - so that no mine can be generated there.
+		// Remove the first point clicked by the player, so that no mine can be generated there.
 		pointSelectionList.remove(startPoint);
 		
 		//Generate array of Points to return
-		Point[] returnArray = new Point[Settings.mineCount];
+		var minePositions = new ArrayList<Point>();
 		
 		/*
-		 * For each mine to be added, select a random point within the 'pointSelectionList' and add it to the 'returnArray'. 
+		 * For each mine to be added, select a random point within the 'pointSelectionList' and add it to the 'minePositions'.
 		 */
-		for (int n = 0; n < Settings.mineCount; n++) {
+		for (var n = 0; n < Settings.mineCount; n++) {
 			//Generate a random number within the bounds of the 'pointSelectionList'. -1 to keep within bounds.
 			int curr = randomNumber(pointSelectionList.size() - 1);
 			//Pick the point at this number.
-			returnArray[n] = pointSelectionList.get(curr).copy();
+			minePositions.add(pointSelectionList.get(curr).copy());
 			//Each time a point is selected, remove it from the 'pointSelectionList' to avoid doubles.
 			pointSelectionList.remove(curr);
 		}
 		
 		//Return the finished array of 'mineCount' amount of Points, at which mines will be placed.
-		return returnArray;
+		return minePositions;
 	}
 
 	/**
-	 * Returns a random integer min <= int <= max.
-	 * @param max
-	 * @return
+	 * @return a random integer 0 <= int <= max.
 	 */
 	private static int randomNumber(int max) {
 		return (int)Math.round(Math.random() * max);
 	}
 
-    	/**
+	/**
 	 * A method that checks the 8 surrounding tiles for mines.
-	 * @param x
-	 * @param y
-	 * @return
 	 */
-	private int calcSurroundingMines(int x, int y) {
-		return (int) Arrays
-			.stream(getSurroundingTiles(x, y))
-			.filter(p -> tileMap[p.x()][p.y()].hasMine)
-			.count();
-	}
-
-    private Point[] getSurroundingTiles(int x, int y) {
-		//Generate an ArrayList with points representing points in the TileMap.
-		ArrayList<Point> surroundingTilesList = new ArrayList<>();
-		/*
-		 * For each tile in a 9-tile square centered on the current tile:
-		 * If it exists, and is not the 'current tile',
-		 * add it to the list of 'surroundingTilesList'
-		 */
-		for (int dx = -1; dx < 2; dx++) {
-			for (int dy = -1; dy < 2; dy++) {
-				if (isTileWithinBounds(new Point(x + dx, y + dy)) && !(dx == 0 && dy == 0)) {
-					surroundingTilesList.add(new Point(x + dx, y + dy));
-				}
-			}
-		}
-		
-		//Convert the ArrayList to an array and return the finished product.
-		return surroundingTilesList.toArray(new Point[0]);
+	private int calcSurroundingMines(Point curr) {
+		return (int) Point.getSurroundingSquare(curr)
+				.stream()
+				.filter(this::isTileWithinBounds)
+				.filter(p -> tileMap[p.x()][p.y()].hasMine)
+				.count();
 	}
 
     /**
@@ -124,8 +92,8 @@ public class MineMap {
 	 */
 	public boolean isTileWithinBounds(Point p) {
 		//If the point is within the bounds, then return 'true':
-		return (p.x() >= 0 && p.x() < x() &&
-				p.y() >= 0 && p.y() < y());
+		return (p.x() >= 0 && p.x() < width() &&
+				p.y() >= 0 && p.y() < height());
 	}
 
     public void setFlagged(Point p, boolean b) {
@@ -152,11 +120,11 @@ public class MineMap {
         tileMap[p.x()][p.y()].isChecked = b;
     }
 
-    public int x() {
+    public int width() {
         return xSize;
     }
 
-    public int y() {
+    public int height() {
         return ySize;
     }
 
