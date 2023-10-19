@@ -37,6 +37,11 @@ public class Point {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return x*2+y*3;
+    }
+
     /*
      * Returns the 4 adjacent tiles, **excluding** diagonally adjacent.
      */
