@@ -1,12 +1,9 @@
 package main;
 
-import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.WindowConstants;
 
 import utils.Settings;
 
@@ -24,37 +21,22 @@ enum Direction {
 	DOWN
 }
 
-enum State {
-	ONGOING,
-	LOST,
-	WON
-}
-
 public class Controller {
-	private boolean shift; // is the shift key down?
-	private final Board board;
-	private final JPanel view;
+	private boolean shift; // Whether or not the shift key is down.
+	private final Game game;
+	private final JFrame view;
 
 	public Controller() {
-		board = new Board(Settings.startingPoint, Settings.tileCountX, Settings.tileCountY);
-		view = new View(board);
-		JFrame frame = new JFrame("MinesweeperAtHome");
-
-		//Set the frame to terminate the program when closed.
-		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		// Classic Model-View-Controller (MVC) split.
+		// Game is 'model' in the MVC split. It holds and updates the game state.
+		// The only interaction View has with Game is reading game state to draw it.
+		// This class, Controller, is the interface between them; it takes input, sends it to Game to update game state.
+		game = new Game(Settings.startingPoint, Settings.tileCountX, Settings.tileCountY);
+		view = new View(game);
+	
+		view.addKeyListener(createKeyAdapter());
 		
-		//Applying settings and adding the custom Canvas-based 'viewer' to the JFrame 'frame'.
-		//Dynamic calculation of the size of 'frame'.
-		frame.getContentPane().setPreferredSize(new Dimension(
-				Settings.borderSizeX * 2 + Settings.tileCountX * Settings.tileSizeX + (Settings.tileCountX - 1) * Settings.tileSpacingX, 
-				Settings.borderSizeY * 3 + Settings.topUISizeY + Settings.tileCountY * Settings.tileSizeY + (Settings.tileCountY - 1) * Settings.tileSpacingY
-				));
-		frame.pack();
-		frame.add(view);
-		
-		frame.addKeyListener(createKeyAdapter());
-		
-		frame.setVisible(true);
+		view.setVisible(true);
 	}
 
 	KeyAdapter createKeyAdapter() {
@@ -80,12 +62,12 @@ public class Controller {
 			}
 
 			private void move(Direction dir) {
-				board.move(dir, shift ? 3 : 1);
+				game.move(dir, shift ? 3 : 1);
 				view.repaint();
 			}
 
 			private void action(Action action) {
-				board.action(action);
+				game.action(action);
 				view.repaint();
 			}
 		};

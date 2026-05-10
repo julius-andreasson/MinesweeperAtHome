@@ -6,7 +6,13 @@ import java.util.stream.Collectors;
 import utils.Point;
 import utils.Settings;
 
-public class Board {
+enum State {
+	ONGOING,
+	LOST,
+	WON
+}
+
+public class Game {
 	private State state;
 	private boolean firstDig = true;
 	private MineMap map;
@@ -14,9 +20,9 @@ public class Board {
 	private int tilesCleared;
 	private Point selectedTile;
 	
-	public Board(Point startingPoint, int xSize, int ySize) {
-		selectedTile = startingPoint;
-		map = new MineMap(xSize, ySize, startingPoint);
+	public Game(Point startingPos, int xSize, int ySize) {
+		selectedTile = startingPos;
+		map = new MineMap(xSize, ySize, startingPos);
 
 		state = State.ONGOING;
 	}
