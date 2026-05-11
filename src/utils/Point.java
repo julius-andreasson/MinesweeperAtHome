@@ -39,7 +39,7 @@ public class Point {
 
     @Override
     public int hashCode() {
-        return x*2+y*3;
+        return (int) (Math.pow(2, x) + Math.pow(3, y));
     }
 
     /*
